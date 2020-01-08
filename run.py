@@ -24,7 +24,12 @@ api.add_resource(resources.SecretResource, '/api/v1/secret')
 
 
 # Setting up database
-app.config['MONGODB_SETTINGS'] = {
-    "db": "jobPortal",
-}
+# app.config['MONGODB_SETTINGS'] = {
+#     "db": "jobPortal"
+# }
+
+DB_URI = "mongodb+srv://chameleon:kerberos@cluster0-sbsqw.mongodb.net/test?retryWrites=true&w=majority"
+
+app.config['MONGODB_HOST'] = DB_URI
+
 db = MongoEngine(app)
