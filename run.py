@@ -3,9 +3,11 @@ from flask_restful import Api
 import resources
 from flask_mongoengine import MongoEngine
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 
 # JWT
@@ -22,12 +24,7 @@ api.add_resource(resources.TokenRefresh, '/api/v1/token/refresh')
 api.add_resource(resources.AllUsers, '/api/v1/users')
 api.add_resource(resources.SecretResource, '/api/v1/secret')
 
-
-# Setting up database
-# app.config['MONGODB_SETTINGS'] = {
-#     "db": "jobPortal"
-# }
-
+#Registering database
 DB_URI = "mongodb+srv://chameleon:kerberos@cluster0-sbsqw.mongodb.net/test?retryWrites=true&w=majority"
 
 app.config['MONGODB_HOST'] = DB_URI
