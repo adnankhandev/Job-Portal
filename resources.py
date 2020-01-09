@@ -25,7 +25,7 @@ class InitialRegistration(Resource):
         parser.add_argument('last_name')
 
         data = parser.parse_args()
-        print(data['username'])
+
         new_user = UserModel(
             username=data['username'],
             password=bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()),
