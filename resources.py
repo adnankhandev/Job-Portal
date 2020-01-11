@@ -1,6 +1,8 @@
-from utilities import min_length
+from utilities import (
+    min_length
+)
 from flask_restful import Resource, reqparse
-from models import UserModel
+import models
 import json
 import bcrypt
 from flask_jwt_extended import (
@@ -14,6 +16,13 @@ from flask_jwt_extended import (
 
 parser = reqparse.RequestParser()
 
+
+####################################################################
+####################################################################
+####################### USERS ## & ## ACCOUNTS #####################
+####################################################################
+####################################################################
+
 class InitialRegistration(Resource):
     def post(self):
         parser.add_argument('username', help='This field cannot be blank', required=True)
@@ -26,7 +35,7 @@ class InitialRegistration(Resource):
 
         data = parser.parse_args()
 
-        new_user = UserModel(
+        new_user = models.UserModel(
             username=data['username'],
             password=bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()),
             email=data['email'],
@@ -53,9 +62,9 @@ class UserLogin(Resource):
         parser.add_argument('password', help='Please enter at least 6 characters', required=True)
         data = parser.parse_args()
 
-        user = UserModel.objects(username=data['username']).first()
+        user = models.UserModel.objects(username=data['username']).first()
         if not user:
-            return {'message': 'User {} doesn\'t exist'.format(data['username'])}
+            return {'error': 'User {} doesn\'t exist'.format(data['username'])}, 404
         user = json.loads(user.to_json())
 
         if bcrypt.checkpw(data['password'].encode('utf-8'), user["password"].encode('utf-8')):
@@ -65,15 +74,18 @@ class UserLogin(Resource):
                 'message': 'Logged in as {}'.format(user["username"]),
                 'access_token': access_token,
                 'refresh_token': refresh_token
-            }
+            }, 200
         else:
-            return {'message': 'Wrong credentials'}
+            return {'error': 'Unauthorized'}, 401
         
         return data
 
 
 class UserLogoutAccess(Resource):
     def post(self):
+        parser.add_argument('token')
+        data = parser.parse_args()
+
         return {'message': 'User logout'}
 
 
@@ -83,9 +95,11 @@ class UserLogoutRefresh(Resource):
 
 
 class TokenRefresh(Resource):
+    @jwt_refresh_token_required
     def post(self):
-        return {'message': 'Token refresh'}
-
+        current_user = get_jwt_identity()
+        access_token = create_access_token(identity = current_user)
+        return {'access_token': access_token}
 
 class AllUsers(Resource):
     def get(self):
@@ -99,5 +113,11 @@ class SecretResource(Resource):
     @jwt_required
     def get(self):
         return {
-            'answer': 42
-        }
+            # 'answer': 42
+            "admin": models.UserModel.find_user_by_username("admin")
+        }, 200
+
+
+class test(Resource):
+    def get(self):
+        return models.RevokedTokens.is_jti_blacklisted("adnan")

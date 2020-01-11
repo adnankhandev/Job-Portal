@@ -14,9 +14,18 @@ api = Api(app)
 app.config['JWT_SECRET_KEY'] = 'jwt-secret-string'
 jwt = JWTManager(app)
 
+app.config['JWT_BLACKLIST_ENABLED'] = True
+app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
+
+@jwt.token_in_blacklist_loader
+def check_if_token_in_blacklist(decrypted_token):
+    jti = decrypted_token['jti']
+    return 1
+
 
 # Registering endpoints
 api.add_resource(resources.InitialRegistration, '/api/v1/registration/initial')
+api.add_resource(resources.test, '/api/v1/test')
 api.add_resource(resources.UserLogin, '/api/v1/login')
 api.add_resource(resources.UserLogoutAccess, '/api/v1/logout/access')
 api.add_resource(resources.UserLogoutRefresh, '/api/v1/logout/refresh')
