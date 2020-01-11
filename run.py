@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_restful import Api
-import resources, models
+from controllers import resources
+from controllers import recruitmentTest as rt
+from models import models
 from flask_mongoengine import MongoEngine
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
@@ -9,7 +11,6 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 api = Api(app)
-
 
 # JWT
 app.config['JWT_SECRET_KEY'] = 'jwt-secret-string'
@@ -30,6 +31,11 @@ api.add_resource(resources.UserLogin, '/api/v1/login')
 api.add_resource(resources.UserLogoutAccess, '/api/v1/logout/access')
 api.add_resource(resources.UserLogoutRefresh, '/api/v1/logout/refresh')
 api.add_resource(resources.TokenRefresh, '/api/v1/token/refresh')
+api.add_resource(rt.RecruitmentTest, '/api/v1/recruitmentTest/')
+# api.add_resource(rt.RecruitmentTest, '/api/v1/recruitmentTest', methods=['GET', 'POST'])
+
+# api.add_resource(rt.RecruitmentTest, '/api/v1/recruitmentTest/<id>')
+
 
 #Registering database
 DB_URI = "mongodb+srv://chameleon:kerberos@cluster0-sbsqw.mongodb.net/test?retryWrites=true&w=majority"
