@@ -16,11 +16,8 @@ from flask_jwt_extended import (
 
 parser = reqparse.RequestParser()
 
-
-####################################################################
 ####################################################################
 ####################### USERS ## & ## ACCOUNTS #####################
-####################################################################
 ####################################################################
 
 class InitialRegistration(Resource):
@@ -35,7 +32,7 @@ class InitialRegistration(Resource):
 
         data = parser.parse_args()
 
-        new_user = models.UserModel(
+        new_user = models.Users(
             username=data['username'],
             password=bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()),
             email=data['email'],
@@ -55,14 +52,13 @@ class InitialRegistration(Resource):
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
 
-
 class UserLogin(Resource):
     def post(self):
         parser.add_argument('username', help='This field cannot be blank', required=True)
         parser.add_argument('password', help='Please enter at least 6 characters', required=True)
         data = parser.parse_args()
 
-        user = models.UserModel.objects(username=data['username']).first()
+        user = models.Users.objects(username=data['username']).first()
         if not user:
             return {'error': 'User {} doesn\'t exist'.format(data['username'])}, 404
         user = json.loads(user.to_json())
@@ -80,19 +76,28 @@ class UserLogin(Resource):
         
         return data
 
-
 class UserLogoutAccess(Resource):
+    @jwt_required
     def post(self):
-        parser.add_argument('token')
-        data = parser.parse_args()
-
-        return {'message': 'User logout'}
+        jti = get_raw_jwt()['jti']
+        try:
+            revoked_token = models.RevokedTokens(jti = jti)
+            revoked_token.save()
+            return {'message': 'Access token has been revoked'}, 200
+        except:
+            return {'message': 'Something went wrong'}, 500
 
 
 class UserLogoutRefresh(Resource):
+    @jwt_refresh_token_required
     def post(self):
-        return {'message': 'User logout'}
-
+        jti = get_raw_jwt()['jti']
+        try:
+            revoked_token = models.RevokedTokens(jti = jti)
+            revoked_token.save()
+            return {'message': 'Refresh token has been revoked'}, 200
+        except:
+            return {'message': 'Something went wrong'}, 500
 
 class TokenRefresh(Resource):
     @jwt_refresh_token_required
@@ -101,23 +106,7 @@ class TokenRefresh(Resource):
         access_token = create_access_token(identity = current_user)
         return {'access_token': access_token}
 
-class AllUsers(Resource):
-    def get(self):
-        return {'message': 'List of users'}
-
-    def delete(self):
-        return {'message': 'Delete all users'}
-
-
-class SecretResource(Resource):
-    @jwt_required
-    def get(self):
-        return {
-            # 'answer': 42
-            "admin": models.UserModel.find_user_by_username("admin")
-        }, 200
-
-
 class test(Resource):
+    @jwt_required
     def get(self):
         return models.RevokedTokens.is_jti_blacklisted("adnan")
