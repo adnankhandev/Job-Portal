@@ -2,21 +2,23 @@ from utilities import (
     min_length
 )
 from flask_restful import Resource, reqparse
-from models import RecruitmentTest as rt
+from models import Services as rt
 import json
 
 parser = reqparse.RequestParser()
 
-class RecruitmentTest(Resource):
+class Service(Resource):
     def post(self):
-        print(rt)
+        print(self)
         parser.add_argument('service', help='This field cannot be blank', required=True)
-        parser.add_argument('questions', help='Please enter at least 6 characters', required=True)
-
+        parser.add_argument('questions', help='This field cannot be blank', action='append', location='json', required=True)
+        print(parser)
         data = parser.parse_args()
+        print("-------------------------------------")
         print(data)
-        new_test = rt.RecruitementTest(
+        new_test = rt.Services(
             service=data['service'],
+            questions=data['questions']
         )
 
         try:
@@ -34,10 +36,10 @@ class RecruitmentTest(Resource):
     def get(self, id=None):
         try:
             if id is None:
-                print(rt.RecruitementTest)
-                response = rt.RecruitementTest.objects.all()
+                print(rt.Services)
+                response = rt.Services.objects.all()
             else:
-                response = rt.RecruitementTest.objects.get(id)
+                response = rt.Services.objects.get(id=id)
             return {
                 'response': '{}'.format(json.loads(response.to_json()))
             }, 200

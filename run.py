@@ -1,7 +1,8 @@
 from flask import Flask
 from flask_restful import Api
 from controllers import resources
-from controllers import recruitmentTest as rt
+from controllers import Service as rt
+from services import message
 from models import models
 from flask_mongoengine import MongoEngine
 from flask_jwt_extended import JWTManager
@@ -31,8 +32,10 @@ api.add_resource(resources.UserLogin, '/api/v1/login')
 api.add_resource(resources.UserLogoutAccess, '/api/v1/logout/access')
 api.add_resource(resources.UserLogoutRefresh, '/api/v1/logout/refresh')
 api.add_resource(resources.TokenRefresh, '/api/v1/token/refresh')
-api.add_resource(rt.RecruitmentTest, '/api/v1/recruitmentTest/')
-# api.add_resource(rt.RecruitmentTest, '/api/v1/recruitmentTest', methods=['GET', 'POST'])
+# api.add_resource(rt.RecruitmentTest, '/api/v1/recruitmentTest/<id>', methods=['GET', 'PATCH', 'DELETE'], )
+api.add_resource(rt.Service, '/api/v1/service', methods=['GET', 'POST'])
+api.add_resource(message.sendMessage, '/api/v1/sendMessage/<number>', methods=['POST'])
+
 
 # api.add_resource(rt.RecruitmentTest, '/api/v1/recruitmentTest/<id>')
 
