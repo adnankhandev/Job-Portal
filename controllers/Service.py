@@ -9,13 +9,10 @@ parser = reqparse.RequestParser()
 
 class Service(Resource):
     def post(self):
-        print(self)
         parser.add_argument('service', help='This field cannot be blank', required=True)
         parser.add_argument('questions', help='This field cannot be blank', action='append', location='json', required=True)
         print(parser)
         data = parser.parse_args()
-        print("-------------------------------------")
-        print(data)
         new_test = rt.Services(
             service=data['service'],
             questions=data['questions']
@@ -25,7 +22,7 @@ class Service(Resource):
             print(new_test)
             new_test.save()
             return {
-                'message': 'Recruitment Test {} was created'
+                'message': 'Service {} was created'.format(data['service'])
             }, 200
         except Exception as ex:
             print(ex)
