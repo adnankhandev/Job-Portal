@@ -27,6 +27,7 @@ def check_if_token_in_blacklist(decrypted_token):
 
 # Registering endpoints
 api.add_resource(resources.InitialRegistration, '/api/v1/registration/initial')
+api.add_resource(resources.AddPersonalDetails, '/api/v1/registration/personal-details/<userId>')
 api.add_resource(resources.test, '/api/v1/test')
 api.add_resource(resources.UserLogin, '/api/v1/login')
 api.add_resource(resources.UserLogoutAccess, '/api/v1/logout/access')

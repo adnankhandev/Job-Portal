@@ -2,9 +2,10 @@ from utilities import (
     min_length
 )
 from flask_restful import Resource, reqparse
-import models
+from models.Users import Users
 import json
 import bcrypt
+from flask import request
 from flask_jwt_extended import (
     create_access_token, 
     create_refresh_token, 
@@ -19,6 +20,46 @@ parser = reqparse.RequestParser()
 ####################################################################
 ####################### USERS ## & ## ACCOUNTS #####################
 ####################################################################
+
+class AddPersonalDetails(Resource):
+    def post(self, userId):
+        parser.add_argument('duration_of_stay_at_address')
+        parser.add_argument('profile_picture')
+        parser.add_argument('postcode')
+        parser.add_argument('current_address')
+        parser.add_argument('home_number')
+        parser.add_argument('gender')
+        parser.add_argument('nationality')
+        parser.add_argument('date_of_birth')
+
+        data = parser.parse_args()
+        currentUser = models.Users.find_user_by_id(userId)
+
+        currentUserDetails = models.PersonalDetails(
+            duration_of_stay_at_address = data['duration_of_stay_at_address'],
+            profile_picture = data['profile_picture'],
+            postcode = data['postcode'],
+            current_address = data['current_address'],
+            home_number = data['home_number'],
+            gender = data['gender'],
+            nationality = data['nationality'],
+            date_of_birth = data['date_of_birth'],
+        )
+
+        currentUserDetails.save()
+
+    def update(self):
+        parser.add_argument('duration_of_stay_at_address')
+        parser.add_argument('profile_picture')
+        parser.add_argument('postcode')
+        parser.add_argument('current_address')
+        parser.add_argument('home_number')
+        parser.add_argument('gender')
+        parser.add_argument('nationality')
+        parser.add_argument('date_of_birth')
+        parser.add_argument('username')
+
+        data = parser.parse_args()
 
 class InitialRegistration(Resource):
     def post(self):
@@ -87,7 +128,6 @@ class UserLogoutAccess(Resource):
         except:
             return {'message': 'Something went wrong'}, 500
 
-
 class UserLogoutRefresh(Resource):
     @jwt_refresh_token_required
     def post(self):
@@ -109,4 +149,4 @@ class TokenRefresh(Resource):
 class test(Resource):
     @jwt_required
     def get(self):
-        return models.RevokedTokens.is_jti_blacklisted("adnan")
+        return Users.get_all()
