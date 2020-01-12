@@ -24,3 +24,6 @@ class sendEmail(Resource):
             }, 200
         except Exception as e:
             print(e.message)
+            return {
+                'message': 'Something unexpected happend'
+            }, 500
