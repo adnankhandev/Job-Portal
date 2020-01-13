@@ -1,3 +1,5 @@
+import mongoengine as me
+
 class RevokedTokens(me.Document):
     meta = {'collection': 'revoked_tokens'}
 
