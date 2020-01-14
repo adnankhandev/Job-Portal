@@ -11,6 +11,9 @@ class PersonalDetails(me.Document):
     duration_of_stay_at_address = me.StringField()
     profile_picture = me.ImageField()
 
+class References(me.Document):
+    email = me.StringField()
+    results = me.StringField()
 
 class Users(me.Document):
     meta = {'collection': 'users'}
@@ -26,6 +29,10 @@ class Users(me.Document):
     password = me.StringField(nullable=False, required=True)
 
     personal_details = me.ReferenceField('PersonalDetails', reverse_delete_rule=1)
+
+    user_type = me.StringField() # could be anyone of these 1. Admin 2, Applicant 3. Worker
+
+    reference_details = me.ListField(me.ReferenceField('References', reverse_delete_rule=1))
 
     @classmethod
     def find_user_by_username(cls, uname):
@@ -46,3 +53,6 @@ class Users(me.Document):
     @classmethod
     def get_all(cls):
         return json.loads(cls.objects().to_json())
+
+    # @classmethod
+    # def add_reference_details():

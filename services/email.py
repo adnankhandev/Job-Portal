@@ -6,8 +6,8 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from flask_restful import Resource, reqparse
 
-class sendEmail(Resource):
-    def post(self, email):
+class sendEmail():
+    def post(email):
         message = Mail(
         from_email='maryem.fatima96@gmail.com',
         to_emails=email,
@@ -19,11 +19,5 @@ class sendEmail(Resource):
             print(response.status_code)
             print(response.body)
             print(response.headers)
-            return {
-                'message': 'Message sent'
-            }, 200
         except Exception as e:
-            print(e.message)
-            return {
-                'message': 'Something unexpected happend'
-            }, 500
+            print(e)
