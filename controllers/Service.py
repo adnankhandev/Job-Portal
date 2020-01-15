@@ -28,7 +28,7 @@ class Service(Resource):
             print(ex)
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
-            return {'error': message}, 500
+            return {'error': message}, 400
     
     def get(self, id=None):
         try:
@@ -44,5 +44,4 @@ class Service(Resource):
             print(ex)
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
-            return {'error': message}, 500
-    
+            return {'error': message}, 400

@@ -25,5 +25,5 @@ class sendMessage(Resource):
         except Exception as e:
             print(e.message)
             return {
-                'message': 'Something unexpected happend'
-            }, 500
+                'message': 'Something unexpected happened'
+            }, 400

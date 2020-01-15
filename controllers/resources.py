@@ -2,7 +2,7 @@ from utilities import (
     min_length
 )
 from flask_restful import Resource, reqparse
-from models import Users
+from models.Users import Users
 import json
 import bcrypt
 from flask import request
@@ -34,7 +34,7 @@ class AddPersonalDetails(Resource):
         parser.add_argument('date_of_birth')
 
         data = parser.parse_args()
-        currentUser = Users.Users.find_user_by_id(userId)
+        currentUser = Users.find_user_by_id(userId)
 
         currentUserDetails = Users.PersonalDetails(
             duration_of_stay_at_address = data['duration_of_stay_at_address'],
@@ -74,7 +74,7 @@ class InitialRegistration(Resource):
 
         data = parser.parse_args()
 
-        new_user = Users.Users(
+        new_user = Users(
             username=data['username'],
             password=bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()),
             email=data['email'],
@@ -92,7 +92,7 @@ class InitialRegistration(Resource):
         except Exception as ex:
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
-            return {'error': message}, 500
+            return {'error': message}, 400
 
 class UserLogin(Resource):
     def post(self):
@@ -100,7 +100,7 @@ class UserLogin(Resource):
         parser.add_argument('password', help='Please enter at least 6 characters', required=True)
         data = parser.parse_args()
 
-        user = Users.Users.objects(username=data['username']).first()
+        user = Users.objects(username=data['username']).first()
         if not user:
             return {'error': 'User {} doesn\'t exist'.format(data['username'])}, 404
         user = json.loads(user.to_json())
@@ -127,7 +127,7 @@ class UserLogoutAccess(Resource):
             revoked_token.save()
             return {'message': 'Access token has been revoked'}, 200
         except:
-            return {'message': 'Something went wrong'}, 500
+            return {'message': 'Something went wrong'}, 400
 
 class UserLogoutRefresh(Resource):
     @jwt_refresh_token_required
@@ -138,7 +138,7 @@ class UserLogoutRefresh(Resource):
             revoked_token.save()
             return {'message': 'Refresh token has been revoked'}, 200
         except:
-            return {'message': 'Something went wrong'}, 500
+            return {'message': 'Something went wrong'}, 400
 
 class TokenRefresh(Resource):
     @jwt_refresh_token_required
@@ -154,12 +154,12 @@ class test(Resource):
 
 class ReferenceRegistration(Resource):
     def post(self):
-        reference_details = [0] * 5;
+        reference_details = [0] * 5
         parser.add_argument("references", action='append')
         parser.add_argument("username", required=True)
 
         data = parser.parse_args()
-        user = Users.Users.objects(username=data['username']).first()
+        user = Users.objects(username=data['username']).first()
         if not user:
             return {'error': 'User {} doesn\'t exist'.format(data['username'])}, 404
             user = json.loads(user.to_json())
@@ -179,4 +179,4 @@ class ReferenceRegistration(Resource):
                 'message': 'User {} references have been created'.format(updatedUser)
             }, 200
         except:
-            return {'message': 'Something went wrong'}, 500
+            return {'message': 'Something went wrong'}, 400
