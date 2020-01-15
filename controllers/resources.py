@@ -2,10 +2,11 @@ from utilities import (
     min_length
 )
 from flask_restful import Resource, reqparse
-from models.Users import Users
+from models import Users
 import json
 import bcrypt
 from flask import request
+from services import email
 from flask_jwt_extended import (
     create_access_token, 
     create_refresh_token, 
@@ -33,9 +34,9 @@ class AddPersonalDetails(Resource):
         parser.add_argument('date_of_birth')
 
         data = parser.parse_args()
-        currentUser = models.Users.find_user_by_id(userId)
+        currentUser = Users.Users.find_user_by_id(userId)
 
-        currentUserDetails = models.PersonalDetails(
+        currentUserDetails = Users.PersonalDetails(
             duration_of_stay_at_address = data['duration_of_stay_at_address'],
             profile_picture = data['profile_picture'],
             postcode = data['postcode'],
@@ -73,7 +74,7 @@ class InitialRegistration(Resource):
 
         data = parser.parse_args()
 
-        new_user = models.Users(
+        new_user = Users.Users(
             username=data['username'],
             password=bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()),
             email=data['email'],
@@ -99,7 +100,7 @@ class UserLogin(Resource):
         parser.add_argument('password', help='Please enter at least 6 characters', required=True)
         data = parser.parse_args()
 
-        user = models.Users.objects(username=data['username']).first()
+        user = Users.Users.objects(username=data['username']).first()
         if not user:
             return {'error': 'User {} doesn\'t exist'.format(data['username'])}, 404
         user = json.loads(user.to_json())
@@ -122,7 +123,7 @@ class UserLogoutAccess(Resource):
     def post(self):
         jti = get_raw_jwt()['jti']
         try:
-            revoked_token = models.RevokedTokens(jti = jti)
+            revoked_token = Users.RevokedTokens(jti = jti)
             revoked_token.save()
             return {'message': 'Access token has been revoked'}, 200
         except:
@@ -133,7 +134,7 @@ class UserLogoutRefresh(Resource):
     def post(self):
         jti = get_raw_jwt()['jti']
         try:
-            revoked_token = models.RevokedTokens(jti = jti)
+            revoked_token = Users.RevokedTokens(jti = jti)
             revoked_token.save()
             return {'message': 'Refresh token has been revoked'}, 200
         except:
@@ -150,3 +151,32 @@ class test(Resource):
     @jwt_required
     def get(self):
         return Users.get_all()
+
+class ReferenceRegistration(Resource):
+    def post(self):
+        reference_details = [0] * 5;
+        parser.add_argument("references", action='append')
+        parser.add_argument("username", required=True)
+
+        data = parser.parse_args()
+        user = Users.Users.objects(username=data['username']).first()
+        if not user:
+            return {'error': 'User {} doesn\'t exist'.format(data['username'])}, 404
+            user = json.loads(user.to_json())
+         ## Adding refernces against user
+        try:
+            for i in range(5):
+                current_obj = data['references'][i]
+                reference_info = eval(current_obj)
+                print(reference_info)
+                reference_details[i] = Users.References(email=reference_info['email'], results="random string for now").save()
+                ## send an email to this user
+                email.sendEmail.post(reference_info['email'])
+
+            updatedUser = user.update(reference_details=reference_details)
+
+            return {
+                'message': 'User {} references have been created'.format(updatedUser)
+            }, 200
+        except:
+            return {'message': 'Something went wrong'}, 500
