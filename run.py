@@ -3,7 +3,7 @@ from flask_restful import Api
 from controllers import resources
 from controllers import Service as rt
 from services import message, email
-from models import RevokedTokens as RevokedTokens
+from models.RevokedTokens import RevokedTokens
 from flask_mongoengine import MongoEngine
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS

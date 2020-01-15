@@ -1,9 +1,10 @@
 # Download the helper library from https://www.twilio.com/docs/python/install
 from twilio.rest import Client
 from flask_restful import Resource, reqparse
-
+from flask_jwt_extended import jwt_required
 
 class sendMessage(Resource):
+    @jwt_required
     def post(self, number):
         # Your Account Sid and Auth Token from twilio.com/console
         # DANGER! This is insecure. See http://twil.io/secure
@@ -12,7 +13,7 @@ class sendMessage(Resource):
         client = Client(account_sid, auth_token)
         try:
             message = client.messages.create(
-                            body="Test message!!!",
+                            body="Maid of London, are you ready?",
                             from_='+12056289220',
                             to='+' + number
                         )
