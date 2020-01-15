@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restful import Api
 from controllers import resources
 from controllers import Service as rt
+from controllers import references
 from services import message, email
 from models.RevokedTokens import RevokedTokens
 from flask_mongoengine import MongoEngine
@@ -37,7 +38,8 @@ api.add_resource(resources.TokenRefresh, '/api/v1/token/refresh')
 api.add_resource(rt.Service, '/api/v1/service', methods=['GET', 'POST'])
 api.add_resource(message.sendMessage, '/api/v1/sendMessage/<number>', methods=['POST'])
 api.add_resource(email.sendEmail, '/api/v1/sendEmail/<email>', methods=['POST'])
-api.add_resource(resources.ReferenceRegistration, '/api/v1/registration/references', methods=['POST'])
+api.add_resource(references.ReferenceRegistration, '/api/v1/registration/references', methods=['POST'])
+api.add_resource(references.SaveReferenceAnswers, '/api/v1/references/results', methods=['POST'])
 
 
 #Registering database

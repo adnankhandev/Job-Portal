@@ -151,32 +151,3 @@ class test(Resource):
     @jwt_required
     def get(self):
         return Users.get_all()
-
-class ReferenceRegistration(Resource):
-    def post(self):
-        reference_details = [0] * 5
-        parser.add_argument("references", action='append')
-        parser.add_argument("username", required=True)
-
-        data = parser.parse_args()
-        user = Users.objects(username=data['username']).first()
-        if not user:
-            return {'error': 'User {} doesn\'t exist'.format(data['username'])}, 404
-            user = json.loads(user.to_json())
-         ## Adding refernces against user
-        try:
-            for i in range(5):
-                current_obj = data['references'][i]
-                reference_info = eval(current_obj)
-                print(reference_info)
-                reference_details[i] = Users.References(email=reference_info['email'], results="random string for now").save()
-                ## send an email to this user
-                email.sendEmail.post(reference_info['email'])
-
-            updatedUser = user.update(reference_details=reference_details)
-
-            return {
-                'message': 'User {} references have been created'.format(updatedUser)
-            }, 200
-        except:
-            return {'message': 'Something went wrong'}, 400

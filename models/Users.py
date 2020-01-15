@@ -13,7 +13,7 @@ class PersonalDetails(me.Document):
 
 class References(me.Document):
     email = me.StringField()
-    results = me.StringField()
+    results = me.ListField(me.StringField())
 
 class Users(me.Document):
     meta = {'collection': 'users'}
