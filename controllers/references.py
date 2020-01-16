@@ -25,23 +25,18 @@ parser = reqparse.RequestParser()
 # 		"references": [
 # 			{
 # 				"email": "14besemfatima@seecs.edu.pk",
-# 				"answers": "sardewbjfd"
 # 			},
 # 			{
 # 				"email": "adnanak556@gmail.com",
-# 				"answers": "sardewbjfd"
 # 			},
 # 			{
 # 				"email": "maryem.fatima96@gmail.com",
-# 				"answers": "sardewbjfd"
 # 			},
 # 			{
 # 				"email": "maryem.fatima96@gmail.com",
-# 				"answers": "sardewbjfd"
 # 			},
 # 			{
 # 				"email": "maryem.fatima96@gmail.com",
-# 				"answers": "sardewbjfd"
 # 			}
 # 			]
 # }
