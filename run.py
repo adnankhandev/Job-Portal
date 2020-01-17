@@ -28,6 +28,8 @@ def check_if_token_in_blacklist(decrypted_token):
 # Registering endpoints
 api.add_resource(resources.InitialRegistration, '/api/v1/registration/initial')
 api.add_resource(resources.AddPersonalDetails, '/api/v1/registration/personal-details/<userId>')
+api.add_resource(resources.AddEmergencyContact, '/api/v1/registration/emergency-contact-details/<userId>', methods=['POST'])
+api.add_resource(resources.AddEmployementHistory, '/api/v1/registration/employement-details/<userId>', methods=['POST'])
 api.add_resource(resources.test, '/api/v1/test')
 api.add_resource(resources.UserLogin, '/api/v1/login')
 api.add_resource(resources.UserLogoutAccess, '/api/v1/logout/access')
@@ -37,7 +39,7 @@ api.add_resource(resources.TokenRefresh, '/api/v1/token/refresh')
 api.add_resource(rt.Service, '/api/v1/service', methods=['GET', 'POST'])
 api.add_resource(message.sendMessage, '/api/v1/sendMessage/<number>', methods=['POST'])
 api.add_resource(email.sendEmail, '/api/v1/sendEmail/<email>', methods=['POST'])
-api.add_resource(resources.ReferenceRegistration, '/api/v1/registration/references', methods=['POST'])
+api.add_resource(resources.ReferenceRegistration, '/api/v1/registration/references/<userId>', methods=['POST'])
 
 
 #Registering database

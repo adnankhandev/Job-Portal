@@ -1,5 +1,6 @@
 import mongoengine as me
 import json
+from models import Services
 
 class PersonalDetails(me.Document):
     date_of_birth = me.DateField()
@@ -12,8 +13,30 @@ class PersonalDetails(me.Document):
     profile_picture = me.ImageField()
 
 class References(me.Document):
+    name: me.StringField()
+    contact_number: me.StringField()
     email = me.StringField()
+    address = me.StringField()
     results = me.StringField()
+
+class EmergencyContact(me.Document):
+    meta = {'collection': 'emergency_contact'}
+
+    fullname = me.StringField()
+    relation = me.StringField()
+    contact_number = me.IntField()
+
+class EmployementHistory(me.Document):
+    meta = {'collection': 'employement_history'}
+
+    name = me.StringField()
+    service_hours= me.IntField()
+    salary_per_hour = me.IntField()
+    starting_date = me.StringField()
+    end_date = me.StringField()
+    reasons_of_leaving = me.StringField()
+    notes = me.StringField()
+
 
 class Users(me.Document):
     meta = {'collection': 'users'}
@@ -33,6 +56,12 @@ class Users(me.Document):
     user_type = me.StringField() # could be anyone of these 1. Admin 2, Applicant 3. Worker
 
     reference_details = me.ListField(me.ReferenceField('References', reverse_delete_rule=1))
+
+    emergency_contact_details = me.ReferenceField('EmergencyContact', reverse_delete_rule=1)
+
+    services = me.ListField(me.ReferenceField('Services'), reverse_delete_rule=1)
+
+    employement_history = me.ListField(me.ReferenceField('EmployementHistory'), reverse_delete_rule=1)
 
     @classmethod
     def find_user_by_username(cls, uname):
