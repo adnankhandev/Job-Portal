@@ -3,6 +3,10 @@ from utilities import (
 )
 from flask_restful import Resource, reqparse
 from models.Users import Users
+from models.Users import EmergencyContact
+from models.Users import EmployementHistory
+from models.Users import References
+from models import Services
 import json
 import bcrypt
 from flask import request
@@ -152,31 +156,170 @@ class test(Resource):
     def get(self):
         return Users.get_all()
 
+
+# /api/v1/registration/references/<userId>
+# {
+# 	"references": [
+# 		{
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# 		},
+# 		{
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# 		},
+# 		{
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# 		},
+# 		{
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# 		},
+# 		{
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# 		}
+# 		]
+# }
 class ReferenceRegistration(Resource):
-    def post(self):
+    def post(self, userId):
         reference_details = [0] * 5
         parser.add_argument("references", action='append')
-        parser.add_argument("username", required=True)
 
         data = parser.parse_args()
-        user = Users.objects(username=data['username']).first()
+        user = Users.objects(id=userId).first()
         if not user:
             return {'error': 'User {} doesn\'t exist'.format(data['username'])}, 404
             user = json.loads(user.to_json())
-         ## Adding refernces against user
+        ## Adding refernces against user
         try:
             for i in range(5):
                 current_obj = data['references'][i]
                 reference_info = eval(current_obj)
                 print(reference_info)
-                reference_details[i] = Users.References(email=reference_info['email'], results="random string for now").save()
+                reference_details[i] = References(email=reference_info['email'], results="random string for now").save()
                 ## send an email to this user
-                email.sendEmail.post(reference_info['email'])
-
+                # email.sendEmail.post(reference_info['email'])
+            print(user)
             updatedUser = user.update(reference_details=reference_details)
-
+            print(updatedUser)
             return {
                 'message': 'User {} references have been created'.format(updatedUser)
             }, 200
-        except:
+        except Exception as ex:
+            print(ex)
             return {'message': 'Something went wrong'}, 400
+
+# /api/v1/registration/emergency-contact-details/5e20ac3d81bdd7eaf22a29f2
+# {
+#   "fullname": "testcontact",
+#   "contact_number": 03333333333,
+#   "relation": "father"
+# }
+
+class AddEmergencyContact(Resource):
+    def post(self, userId):
+        parser.add_argument("fullname", required=True)
+        parser.add_argument("contact_number", required=True)
+        parser.add_argument("relation", required=True)
+
+        data = parser.parse_args()
+        try: 
+            currentUser = Users.objects(id=userId).first()
+            print(currentUser)
+            emergencyContact = EmergencyContact(
+                fullname = data['fullname'],
+                contact_number = data['contact_number'],
+                relation = data['relation']
+            )
+
+            emergency_contact = emergencyContact.save()
+
+            updated_user = currentUser.update(emergency_contact_details = emergency_contact)
+            print(updated_user)
+            return {
+                'message': '{} emergency contact has been created'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            return {'message': 'Something went wrong'}, 500
+
+class AddServices(Resource):
+    def post(self, userId):
+        parser.add_argument("services", action="append")
+        data = parser.parse_args()
+
+        try:
+            currentUser = Users.find_user_by_id(userId)
+
+            updated_user = currentUser.update(services = data['services'])
+            return {
+                'message': 'User {} emergency contact have been created'.format(updated_user)
+            }, 200
+        except Exception as ex:
+            return {'message': 'Something went wrong'}, 500
+
+
+# /api/v1/registration/employement-details/5e20ac3d81bdd7eaf22a29f2
+# {
+# 	"employement_history": [
+# 		{
+# 			"name": "employer1",
+# 			"service_hours": 4,
+# 			"salary_per_hour": 100,
+# 			"starting_date": "12-12-12",
+# 			"end-date": "12-12-13",
+# 			"reasons_of_leaving": "ruhewkfdejkhf",
+# 			"notes": "ewrewfrew"
+# 		},
+# 				{
+# 			"name": "employer1",
+# 			"service_hours": 4,
+# 			"salary_per_hour": 100,
+# 			"starting_date": "12-12-12",
+# 			"end-date": "12-12-13",
+# 			"reasons_of_leaving": "ruhewkfdejkhf",
+# 			"notes": "ewrewfrew"
+# 		}]
+# }
+
+class AddEmployementHistory(Resource):
+    def post(self, userId):
+        parser.add_argument("employement_history", action="append")
+        data = parser.parse_args()
+        length_of_employement_history = len(data['employement_history'])
+        employement_history = [0] * length_of_employement_history
+        try:
+            currentUser = Users.objects(id=userId).first()
+
+            for i in range(length_of_employement_history):
+                current_record = eval(data['employement_history'][i])
+                employement_history[i] = EmployementHistory(
+                    name=current_record['name'],
+                    service_hours=current_record['service_hours'],
+                    salary_per_hour=current_record['salary_per_hour'],
+                    starting_date=current_record['starting_date'],
+                    end_date=current_record['end_date'],
+                    reasons_of_leaving=current_record['reasons_of_leaving'],
+                    notes=current_record['notes']
+                ).save()
+                print(employement_history[i])
+            print(currentUser)
+            updated_user = currentUser.update(employement_history=employement_history)
+            return {
+                'message': '{} employement history has been added'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            return {'message': 'Something went wrong'}, 500
