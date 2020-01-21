@@ -96,7 +96,7 @@ class InitialRegistration(Resource):
         except Exception as ex:
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
-            return {'error': message}, 400
+            return {'error': message}, 500
 
 class UserLogin(Resource):
     def post(self):
@@ -131,7 +131,7 @@ class UserLogoutAccess(Resource):
             revoked_token.save()
             return {'message': 'Access token has been revoked'}, 200
         except:
-            return {'message': 'Something went wrong'}, 400
+            return {'message': 'Something went wrong'}, 500
 
 class UserLogoutRefresh(Resource):
     @jwt_refresh_token_required
@@ -157,7 +157,7 @@ class test(Resource):
         return Users.get_all()
 
 
-# /api/v1/registration/references/<userId>
+# /api/v1/registration/user/<userId>/references/
 # {
 # 	"references": [
 # 		{
@@ -210,18 +210,20 @@ class ReferenceRegistration(Resource):
                 print(reference_info)
                 reference_details[i] = References(email=reference_info['email'], results="random string for now").save()
                 ## send an email to this user
-                # email.sendEmail.post(reference_info['email'])
+                email.sendEmail.post(reference_info['email'])
             print(user)
             updatedUser = user.update(reference_details=reference_details)
             print(updatedUser)
             return {
-                'message': 'User {} references have been created'.format(updatedUser)
+                'message': 'User {} references have been added'.format(user['username'])
             }, 200
         except Exception as ex:
             print(ex)
-            return {'message': 'Something went wrong'}, 400
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
 
-# /api/v1/registration/emergency-contact-details/5e20ac3d81bdd7eaf22a29f2
+# /api/v1/registration/user/<userId>/emergency-contact-details
 # {
 #   "fullname": "testcontact",
 #   "contact_number": 03333333333,
@@ -249,29 +251,38 @@ class AddEmergencyContact(Resource):
             updated_user = currentUser.update(emergency_contact_details = emergency_contact)
             print(updated_user)
             return {
-                'message': '{} emergency contact has been created'.format(currentUser['username'])
+                'message': '{} emergency contact has been added'.format(currentUser['username'])
             }, 200
         except Exception as ex:
             print(ex)
-            return {'message': 'Something went wrong'}, 500
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+
+# /api/v1/registration/user/<userId>/services
+# {
+# serviceIds: ['objectIds of service1', 'objectId of service 2]
+# }
 
 class AddServices(Resource):
     def post(self, userId):
-        parser.add_argument("services", action="append")
+        parser.add_argument("serviceIds", action="append")
         data = parser.parse_args()
 
         try:
-            currentUser = Users.find_user_by_id(userId)
-
-            updated_user = currentUser.update(services = data['services'])
+            currentUser = Users.objects(id=userId).first()
+            services = Services.Services.objects(id__in=data['serviceIds'])
+            updated_user = currentUser.update(services = services)
+            print(updated_user)
             return {
-                'message': 'User {} emergency contact have been created'.format(updated_user)
+                'message': '{}`s services have been added'.format(currentUser['username'])
             }, 200
         except Exception as ex:
-            return {'message': 'Something went wrong'}, 500
-
-
-# /api/v1/registration/employement-details/5e20ac3d81bdd7eaf22a29f2
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+# /api/v1/registration/user/<userId>/employement-details
 # {
 # 	"employement_history": [
 # 		{
@@ -296,7 +307,7 @@ class AddServices(Resource):
 
 class AddEmployementHistory(Resource):
     def post(self, userId):
-        parser.add_argument("employement_history", action="append")
+        parser.add_argument("employement_history", action="append", required=True)
         data = parser.parse_args()
         length_of_employement_history = len(data['employement_history'])
         employement_history = [0] * length_of_employement_history
@@ -322,4 +333,6 @@ class AddEmployementHistory(Resource):
             }, 200
         except Exception as ex:
             print(ex)
-            return {'message': 'Something went wrong'}, 500
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
