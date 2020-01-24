@@ -73,8 +73,7 @@ class InitialRegistration(Resource):
         parser.add_argument('email')
         parser.add_argument('mobile_number')
         parser.add_argument('title')
-        parser.add_argument('first_name')
-        parser.add_argument('last_name')
+        parser.add_argument('name')
 
         data = parser.parse_args()
 
@@ -84,8 +83,7 @@ class InitialRegistration(Resource):
             email=data['email'],
             mobile_number=data['mobile_number'],            
             title=data['title'],
-            first_name=data['first_name'],
-            last_name=data['last_name'],
+            name=data['name'],
         )
 
         try:

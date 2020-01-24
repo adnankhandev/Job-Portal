@@ -42,8 +42,7 @@ class Users(me.Document):
     meta = {'collection': 'users'}
 
     title = me.StringField(max_length=10)
-    first_name = me.StringField(max_length=50)
-    last_name = me.StringField(max_length=50)
+    name = me.StringField(max_length=50)
     
     email = me.EmailField(unique=True)
     mobile_number = me.StringField(max_length=16, unique=True)
@@ -52,15 +51,10 @@ class Users(me.Document):
     password = me.StringField(nullable=False, required=True)
 
     personal_details = me.ReferenceField('PersonalDetails', reverse_delete_rule=1)
-
-    user_type = me.StringField() # could be anyone of these 1. Admin 2, Applicant 3. Worker
-
+    user_type = me.StringField() # could be anyone of these 1. CMS 2. Applicant 3. Worker
     reference_details = me.ListField(me.ReferenceField('References', reverse_delete_rule=1))
-
     emergency_contact_details = me.ReferenceField('EmergencyContact', reverse_delete_rule=1)
-
     services = me.ListField(me.ReferenceField('Services'), reverse_delete_rule=1)
-
     employement_history = me.ListField(me.ReferenceField('EmployementHistory'), reverse_delete_rule=1)
 
     general_question_answers = me.ListField()
@@ -84,6 +78,3 @@ class Users(me.Document):
     @classmethod
     def get_all(cls):
         return json.loads(cls.objects().to_json())
-
-    # @classmethod
-    # def add_reference_details():
