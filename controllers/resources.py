@@ -334,3 +334,24 @@ class AddEmployementHistory(Resource):
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
+# {
+#     general_question_answers = [
+#         "answer1", "answer2", ...
+#     ]
+# }
+class AddGeneralQuestionAnswer(Resource):
+    def post(self, userId):
+        parser.add_argument("general_question_answers", action="append", required=True)
+        data = parser.parse_args()
+        try:
+            currentUser = Users.objects(id=userId).first()
+            print(currentUser)
+            updated_user = currentUser.update(general_question_answers=data['general_question_answers'])
+            return {
+                'message': 'general question answers has been added for {}'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
