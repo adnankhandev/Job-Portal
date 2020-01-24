@@ -63,6 +63,8 @@ class Users(me.Document):
 
     employement_history = me.ListField(me.ReferenceField('EmployementHistory'), reverse_delete_rule=1)
 
+    general_question_answers = me.ListField()
+
     @classmethod
     def find_user_by_username(cls, uname):
         user = cls.objects(username=uname).first()

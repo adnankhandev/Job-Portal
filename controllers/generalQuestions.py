@@ -22,7 +22,6 @@ class GeneralQuestions(Resource):
         )
 
         try:
-            # print(json.loads(new_question))
             new_question.save()
             return {
                 'message': 'Service {} was created'.format(new_question)
@@ -31,7 +30,7 @@ class GeneralQuestions(Resource):
             print(ex)
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
-            return {'error': message}, 400
+            return {'error': message}, 500
     
     def get(self, id=None):
         try:
@@ -47,7 +46,7 @@ class GeneralQuestions(Resource):
             print(ex)
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
-            return {'error': message}, 400
+            return {'error': message}, 500
     
     def put(self, id=None):
         try:
@@ -71,4 +70,4 @@ class GeneralQuestions(Resource):
             print(ex)
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
-            return {'error': message}, 400
+            return {'error': message}, 500
