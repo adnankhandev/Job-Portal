@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from controllers import resources
-from controllers import Service as rt
+from controllers import Service
 from services import message, email
 from controllers import users
 from controllers import generalQuestions
@@ -46,7 +46,8 @@ api.add_resource(resources.UserLogoutRefresh, '/api/v1/logout/refresh')
 # Token refresh
 api.add_resource(resources.TokenRefresh, '/api/v1/token/refresh')
 # Services
-api.add_resource(rt.Service, '/api/v1/service', methods=['GET', 'POST'])
+api.add_resource(Service.Services, '/api/v1/service', methods=['GET', 'POST'])
+api.add_resource(Service.Service, '/api/v1/service/<serviceId>', methods=['GET'])
 # External email and message service
 api.add_resource(message.sendMessage, '/api/v1/sendMessage/<number>', methods=['POST'])
 api.add_resource(email.sendEmail, '/api/v1/sendEmail/<email>', methods=['POST'])

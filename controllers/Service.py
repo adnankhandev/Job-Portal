@@ -7,7 +7,7 @@ import json
 
 parser = reqparse.RequestParser()
 
-class Service(Resource):
+class Services(Resource):
     def post(self):
         parser.add_argument('service', help='This field cannot be blank', required=True)
         parser.add_argument('questions', help='This field cannot be blank', action='append', location='json', required=True)
@@ -33,10 +33,24 @@ class Service(Resource):
     def get(self, id=None):
         try:
             if id is None:
-                print(rt.Services)
                 response = rt.Services.objects.all()
             else:
                 response = rt.Services.objects.get(id=id)
+            return {
+                'response': '{}'.format(json.loads(response.to_json()))
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 400
+
+class Service(Resource):
+    def get(self, serviceId):
+        try:
+            response = rt.Services.objects.get(id=serviceId)
+            if not response:
+                return {'error': 'Service doesn\'t exist'}, 404
             return {
                 'response': '{}'.format(json.loads(response.to_json()))
             }, 200
