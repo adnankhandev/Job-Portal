@@ -32,6 +32,7 @@ api.add_resource(resources.AddPersonalDetails, '/api/v1/registration/personal-de
 api.add_resource(resources.AddEmergencyContact, '/api/v1/registration/user/<userId>/emergency-contact-details', methods=['POST'])
 api.add_resource(resources.AddEmployementHistory, '/api/v1/registration/user/<userId>/employement-details', methods=['POST'])
 api.add_resource(resources.AddGeneralQuestionAnswer, '/api/v1/registration/user/<userId>/general-question-answers', methods=['POST'])
+api.add_resource(resources.UpdateUserType, '/api/v1/registration/user/<userId>/update-user-type', methods=['PATCH'])
 api.add_resource(resources.test, '/api/v1/test')
 api.add_resource(resources.UserLogin, '/api/v1/login')
 api.add_resource(resources.UserLogoutAccess, '/api/v1/logout/access')

@@ -237,6 +237,8 @@ class AddEmergencyContact(Resource):
         data = parser.parse_args()
         try: 
             currentUser = Users.objects(id=userId).first()
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
             print(currentUser)
             emergencyContact = EmergencyContact(
                 fullname = data['fullname'],
@@ -269,6 +271,8 @@ class AddServices(Resource):
 
         try:
             currentUser = Users.objects(id=userId).first()
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
             services = Services.Services.objects(id__in=data['serviceIds'])
             updated_user = currentUser.update(services = services)
             print(updated_user)
@@ -311,7 +315,8 @@ class AddEmployementHistory(Resource):
         employement_history = [0] * length_of_employement_history
         try:
             currentUser = Users.objects(id=userId).first()
-
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
             for i in range(length_of_employement_history):
                 current_record = eval(data['employement_history'][i])
                 employement_history[i] = EmployementHistory(
@@ -346,9 +351,34 @@ class AddGeneralQuestionAnswer(Resource):
         try:
             currentUser = Users.objects(id=userId).first()
             print(currentUser)
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
             updated_user = currentUser.update(general_question_answers=data['general_question_answers'])
             return {
                 'message': 'general question answers has been added for {}'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+
+# {
+#     user_type: 0/1/2  0 -> Applicant, 1-> helper, 2-> CMS
+# }
+class UpdateUserType(Resource):
+    def patch(self, userId):
+        parser.add_argument("user_type", required=True)
+        data = parser.parse_args()
+        try:
+            currentUser = Users.objects(id=userId).first()
+            print(currentUser)
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            print(currentUser)
+            updated_user = currentUser.update(user_type=data['user_type'])
+            return {
+                'message': 'user_type has been updated for {}'.format(currentUser['username'])
             }, 200
         except Exception as ex:
             print(ex)
