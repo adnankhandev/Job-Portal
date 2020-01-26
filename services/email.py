@@ -29,3 +29,16 @@ class sendEmail(Resource):
             return {
                 'message': 'Something unexpected happened'
             }, 400
+    
+class sendReferenceEmail(Resource):
+    def sendEmail(email, url):
+        message = Mail(
+        from_email='maryem.fatima96@gmail.com',
+        to_emails=email,
+        subject='Maid of London, are you ready?',
+        html_content='Hello, Im darth vader. Here to take over earth. Please fill this refernce form {}'.format(url))
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+        except Exception as e:
+            print(e)
