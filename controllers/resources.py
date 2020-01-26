@@ -208,7 +208,8 @@ class ReferenceRegistration(Resource):
                 print(reference_info)
                 reference_details[i] = References(email=reference_info['email'], results="random string for now").save()
                 ## send an email to this user
-                email.sendEmail.post(reference_info['email'])
+                url = 'jobportal.com/referenceStuff?id={}'.format(reference_details[i].id)
+                email.sendReferenceEmail.sendEmail(reference_info['email'], url)
             print(user)
             updatedUser = user.update(reference_details=reference_details)
             print(updatedUser)
@@ -349,6 +350,7 @@ class AddGeneralQuestionAnswer(Resource):
         parser.add_argument("general_question_answers", action="append", required=True)
         data = parser.parse_args()
         try:
+            print(data)
             currentUser = Users.objects(id=userId).first()
             print(currentUser)
             if not currentUser:
