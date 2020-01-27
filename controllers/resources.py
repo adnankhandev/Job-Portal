@@ -3,6 +3,10 @@ from utilities import (
 )
 from flask_restful import Resource, reqparse
 from models.Users import Users
+from models.Users import EmergencyContact
+from models.Users import EmployementHistory
+from models.Users import References
+from models import Services
 import json
 import bcrypt
 from flask import request
@@ -69,8 +73,7 @@ class InitialRegistration(Resource):
         parser.add_argument('email')
         parser.add_argument('mobile_number')
         parser.add_argument('title')
-        parser.add_argument('first_name')
-        parser.add_argument('last_name')
+        parser.add_argument('name')
 
         data = parser.parse_args()
 
@@ -80,8 +83,7 @@ class InitialRegistration(Resource):
             email=data['email'],
             mobile_number=data['mobile_number'],            
             title=data['title'],
-            first_name=data['first_name'],
-            last_name=data['last_name'],
+            name=data['name'],
         )
 
         try:
@@ -92,7 +94,7 @@ class InitialRegistration(Resource):
         except Exception as ex:
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
-            return {'error': message}, 400
+            return {'error': message}, 500
 
 class UserLogin(Resource):
     def post(self):
@@ -127,7 +129,7 @@ class UserLogoutAccess(Resource):
             revoked_token.save()
             return {'message': 'Access token has been revoked'}, 200
         except:
-            return {'message': 'Something went wrong'}, 400
+            return {'message': 'Something went wrong'}, 500
 
 class UserLogoutRefresh(Resource):
     @jwt_refresh_token_required
@@ -151,3 +153,237 @@ class test(Resource):
     @jwt_required
     def get(self):
         return Users.get_all()
+
+
+# /api/v1/registration/user/<userId>/references/
+# {
+# 	"references": [
+# 		{
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# 		},
+# 		{
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# 		},
+# 		{
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# 		},
+# 		{
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# 		},
+# 		{
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# 		}
+# 		]
+# }
+class ReferenceRegistration(Resource):
+    def post(self, userId):
+        reference_details = [0] * 5
+        parser.add_argument("references", action='append')
+
+        data = parser.parse_args()
+        user = Users.objects(id=userId).first()
+        if not user:
+            return {'error': 'User {} doesn\'t exist'.format(data['username'])}, 404
+            user = json.loads(user.to_json())
+        ## Adding refernces against user
+        try:
+            for i in range(5):
+                current_obj = data['references'][i]
+                reference_info = eval(current_obj)
+                print(reference_info)
+                reference_details[i] = References(email=reference_info['email'], results="random string for now").save()
+                ## send an email to this user
+                url = 'jobportal.com/referenceStuff?id={}'.format(reference_details[i].id)
+                email.sendReferenceEmail.sendEmail(reference_info['email'], url)
+            print(user)
+            updatedUser = user.update(reference_details=reference_details)
+            print(updatedUser)
+            return {
+                'message': 'User {} references have been added'.format(user['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+
+# /api/v1/registration/user/<userId>/emergency-contact-details
+# {
+#   "fullname": "testcontact",
+#   "contact_number": 03333333333,
+#   "relation": "father"
+# }
+
+class AddEmergencyContact(Resource):
+    def post(self, userId):
+        parser.add_argument("fullname", required=True)
+        parser.add_argument("contact_number", required=True)
+        parser.add_argument("relation", required=True)
+
+        data = parser.parse_args()
+        try: 
+            currentUser = Users.objects(id=userId).first()
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            print(currentUser)
+            emergencyContact = EmergencyContact(
+                fullname = data['fullname'],
+                contact_number = data['contact_number'],
+                relation = data['relation']
+            )
+
+            emergency_contact = emergencyContact.save()
+
+            updated_user = currentUser.update(emergency_contact_details = emergency_contact)
+            print(updated_user)
+            return {
+                'message': '{} emergency contact has been added'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+
+# /api/v1/registration/user/<userId>/services
+# {
+# serviceIds: ['objectIds of service1', 'objectId of service 2]
+# }
+
+class AddServices(Resource):
+    def post(self, userId):
+        parser.add_argument("serviceIds", action="append")
+        data = parser.parse_args()
+
+        try:
+            currentUser = Users.objects(id=userId).first()
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            services = Services.Services.objects(id__in=data['serviceIds'])
+            updated_user = currentUser.update(services = services)
+            print(updated_user)
+            return {
+                'message': '{}`s services have been added'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+# /api/v1/registration/user/<userId>/employement-details
+# {
+# 	"employement_history": [
+# 		{
+# 			"name": "employer1",
+# 			"service_hours": 4,
+# 			"salary_per_hour": 100,
+# 			"starting_date": "12-12-12",
+# 			"end-date": "12-12-13",
+# 			"reasons_of_leaving": "ruhewkfdejkhf",
+# 			"notes": "ewrewfrew"
+# 		},
+# 				{
+# 			"name": "employer1",
+# 			"service_hours": 4,
+# 			"salary_per_hour": 100,
+# 			"starting_date": "12-12-12",
+# 			"end-date": "12-12-13",
+# 			"reasons_of_leaving": "ruhewkfdejkhf",
+# 			"notes": "ewrewfrew"
+# 		}]
+# }
+
+class AddEmployementHistory(Resource):
+    def post(self, userId):
+        parser.add_argument("employement_history", action="append", required=True)
+        data = parser.parse_args()
+        length_of_employement_history = len(data['employement_history'])
+        employement_history = [0] * length_of_employement_history
+        try:
+            currentUser = Users.objects(id=userId).first()
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            for i in range(length_of_employement_history):
+                current_record = eval(data['employement_history'][i])
+                employement_history[i] = EmployementHistory(
+                    name=current_record['name'],
+                    service_hours=current_record['service_hours'],
+                    salary_per_hour=current_record['salary_per_hour'],
+                    starting_date=current_record['starting_date'],
+                    end_date=current_record['end_date'],
+                    reasons_of_leaving=current_record['reasons_of_leaving'],
+                    notes=current_record['notes']
+                ).save()
+                print(employement_history[i])
+            print(currentUser)
+            updated_user = currentUser.update(employement_history=employement_history)
+            return {
+                'message': '{} employement history has been added'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+# {
+#     general_question_answers = [
+#         "answer1", "answer2", ...
+#     ]
+# }
+class AddGeneralQuestionAnswer(Resource):
+    def post(self, userId):
+        parser.add_argument("general_question_answers", action="append", required=True)
+        data = parser.parse_args()
+        try:
+            print(data)
+            currentUser = Users.objects(id=userId).first()
+            print(currentUser)
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            updated_user = currentUser.update(general_question_answers=data['general_question_answers'])
+            return {
+                'message': 'general question answers has been added for {}'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+
+# {
+#     user_type: 0/1/2  0 -> Applicant, 1-> helper, 2-> CMS
+# }
+class UpdateUserType(Resource):
+    def patch(self, userId):
+        parser.add_argument("user_type", required=True)
+        data = parser.parse_args()
+        try:
+            currentUser = Users.objects(id=userId).first()
+            print(currentUser)
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            print(currentUser)
+            updated_user = currentUser.update(user_type=data['user_type'])
+            return {
+                'message': 'user_type has been updated for {}'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
