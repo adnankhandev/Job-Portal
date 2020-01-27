@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from controllers import resources
+from controllers import references
 from controllers import Service
 from controllers import jobs
 from services import message, email
@@ -55,6 +56,8 @@ api.add_resource(jobs.Job, '/api/v1/jobs/<jobId>', methods=['GET'])
 # External email and message service
 api.add_resource(message.sendMessage, '/api/v1/sendMessage/<number>', methods=['POST'])
 api.add_resource(email.sendEmail, '/api/v1/sendEmail/<email>', methods=['POST'])
+api.add_resource(references.ReferenceRegistration, '/api/v1/registration/references', methods=['POST'])
+api.add_resource(references.SaveReferenceAnswers, '/api/v1/references/results', methods=['POST'])
 # Add general questions
 api.add_resource(generalQuestions.GeneralQuestions, '/api/v1/general-questions', methods=['POST', 'GET'])
 # api.add_resource(generalQuestions.GeneralQuestions, '/api/general-question/<id>/update', methods=['PUT'])
