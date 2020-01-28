@@ -1,26 +1,66 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
+import Container from "reactstrap/lib/Container";
+import Login from './components/Login';
+import Dashboard from './components/Dashboard';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+// import UserProfile from "./components/UserProfile/UserProfile";
+import 'react-toastify/dist/ReactToastify.css';
+import AuthService from '../src/services/Auth';
+import "rsuite/dist/styles/rsuite-default.css";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  render() {
+    return (
+      <BrowserRouter basename={'/'}>
+        <Container>
+          <Switch>
+            <DefaultRoute exact path={`/login`} component={Login} />
+            <PrivateRoute exact path={`/`} component={Dashboard} />
+          </Switch>
+        </Container>
+      </BrowserRouter>
+    );
+  }
 }
 
 export default App;
+
+
+
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route
+    {...rest}
+    render={props =>
+      !AuthService.isSignedIn() ? (
+          <Redirect
+            to={{
+              pathname: "/login"
+            }}
+          />
+      ) : 
+      (
+        <Component {...props} />
+      )
+    }
+  />
+);
+
+
+const DefaultRoute = ({ component: Component, ...rest }) => (
+  <Route
+    {...rest}
+    render={props =>
+      AuthService.isSignedIn() ? (
+          <Redirect
+            to={{
+              pathname: "/"
+            }}
+          />
+      ) : 
+      (
+        <Component {...props} />
+      )
+    }
+  />
+);
