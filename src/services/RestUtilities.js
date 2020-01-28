@@ -1,6 +1,4 @@
 import AuthStore from "../stores/Auth";
-import { Toast } from "reactstrap";
-
 
 export default class RestUtilities {
     static get(url) {
@@ -70,7 +68,6 @@ export default class RestUtilities {
 
                     if (responseContent.status === 401) {
                         AuthStore.removeToken();
-
                     }
 
                     isBadRequest = (responseContent.status === 400);

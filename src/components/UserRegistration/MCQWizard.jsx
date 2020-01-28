@@ -1,14 +1,12 @@
-import React, { Component, Fragment, useState, useEffect } from "react";
-import { FormGroup, Col, Button } from "reactstrap";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
+import React, { Fragment, useState, useEffect } from "react";
+import { Col, Button } from "reactstrap";
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import {
-    Formik,
-
-    Form,
+    // Formik,
+    // Form,
     Field,
-
-    ErrorMessage,
+    // ErrorMessage,
 } from 'formik';
 
 import { RadioButton } from '../common/RadioButton'

@@ -3,7 +3,6 @@ export default class Auth {
     static USER = "USER";
 
     static getToken() {
-
         return window.localStorage.getItem(Auth.STORAGE_KEY);
     }
 
@@ -13,16 +12,17 @@ export default class Auth {
 
     
     static getUser() {
-
         return window.localStorage.getItem(Auth.USER);
     }
 
     static setUser(user) {
         window.localStorage.setItem(Auth.USER, user);
     }
-    
-    
 
+    static removeUser() {
+        window.localStorage.removeItem(Auth.USER);
+    }
+    
     static removeToken() {
         window.localStorage.removeItem(Auth.STORAGE_KEY);
     }

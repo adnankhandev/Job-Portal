@@ -16,17 +16,16 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 export const required = value => (value ? undefined : "Required");
 
 var that = ""
-var selectedQuestions: [];
+// var selectedQuestions: [];
 export class MainForm extends Component {
 
-  selectedQuestions: [];
+  // selectedQuestions: [];
   constructor(props) {
     super(props);
     this.state = {
       nationalities: [],
       services: [],
       questions: [],
-
     };
     that = this;
   }
@@ -46,14 +45,12 @@ export class MainForm extends Component {
           }
           arr.push(obj);
         }
-        console.log(arr);
+        // console.log(arr);
 
         this.setState({
           nationalities: arr,
           services: qs.fetchAllServices().offered_services,
-
-          //   questions: qs.fetchAllQuestions().questions,
-
+          // questions: qs.fetchAllQuestions().questions,
         })
 
       })
@@ -87,11 +84,10 @@ export class MainForm extends Component {
 
   render() {
 
-
-
     return (
 
-      this.state.nationalities.length > 0 && <Wizard
+      this.state.nationalities.length > 0 && 
+      <Wizard
         initialValues={{
           dateOfBirth: "",
           nationality: this.state.nationalities,
@@ -160,21 +156,12 @@ export class MainForm extends Component {
 
         }}
         onSubmit={(values, actions) => {
-          console.log(actions);
+          // console.log(actions);
           sleep(300).then(() => {
             console.log(JSON.stringify(values, null, 2));
             actions.setSubmitting(false);
           });
         }}>
-
-        {/* <Wizard.Page
-          headingText={'Availability'}>
-          {props => (
-            <Availability
-              {...props}
-            />
-          )}
-        </Wizard.Page> */}
 
         <Wizard.Page
 
@@ -225,19 +212,22 @@ export class MainForm extends Component {
 
 
         </Wizard.Page>
-        <Wizard.Page
-          headingText={'Questions'}
-        >
-          {props => (
-            <MCQWizard
-              values={this.state.questions}
+        
+        { this.state.questions.length > 0 &&
+          <Wizard.Page
+            headingText={'Questions'}
+          >
+            {props => (
+              <MCQWizard
+                values={this.state.questions}
 
 
-            />
-          )}
+              />
+            )}
 
 
-        </Wizard.Page>
+          </Wizard.Page>
+        }
 
         <Wizard.Page
 

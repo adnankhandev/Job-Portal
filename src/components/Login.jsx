@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { FormGroup, Col, Button } from "reactstrap";
-
+import jwt_decode from "jwt-decode";
 
 import * as toastr from 'toastr';
 
@@ -11,7 +11,7 @@ import {
     ErrorMessage,
 } from 'formik';
 import * as Yup from 'yup';
-import Label from "reactstrap/lib/Label";
+// import Label from "reactstrap/lib/Label";
 import NavbarComponent from "./common/NavBar";
 import AuthService from './../services/Auth'
 import Auth from "../stores/Auth";
@@ -23,7 +23,6 @@ class UserDetails extends Component {
     };
 
     render() {
-        // const { values } = this.props;
         return (
             <Fragment>
                 <NavbarComponent {...this.props} />
@@ -37,7 +36,7 @@ class UserDetails extends Component {
                             }}
                             validationSchema={Yup.object().shape({
                                 username: Yup.string()
-                                    .required('User Name is required'),
+                                    .required('Username is required'),
                                 password: Yup.string()
                                     .min(6, 'Password must be at least 6 characters')
                                     .required('Password is required'),
@@ -49,14 +48,14 @@ class UserDetails extends Component {
 
                                 auth.signIn(fields).then(response => {
                                     if (!response.is_error) {
-                                        toastr.success(response.content.message.toString());
-                                        Auth.setUser(response.content.message);
+                                        // toastr.success(response.content.message.toString());
+                                        const decoded = jwt_decode(response.content.access_token)
+                                        Auth.setUser(decoded.identity);
 
                                         this.props.history.push("/profile",{ response: response.content.message });
-                                        
                                     }
                                     else{
-                                        debugger
+                                        // debugger
                                         toastr.error(response.error_content.error.toString());
                                     }
                                 })
@@ -70,7 +69,7 @@ class UserDetails extends Component {
 
                                     <FormGroup>
                                         <Col sm="12" md={{ size: 12, offset: 0 }}>
-                                            <Field autocomplete="off" auto name="username" placeholder="User Name" type="text" className={'form-control-transparent' + (errors.firstName && touched.firstName ? ' is-invalid' : '')} />
+                                            <Field autocomplete="off" auto name="username" placeholder="Username" type="text" className={'form-control-transparent' + (errors.username && touched.username ? ' is-invalid' : '')} />
                                             <ErrorMessage name="username" component="div" className="invalid-feedback" />
                                         </Col>
                                     </FormGroup>

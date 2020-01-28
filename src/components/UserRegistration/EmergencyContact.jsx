@@ -19,7 +19,7 @@ const EmergencyContact = ({ values, errors, touched }) => (
   <Fragment>
     <FormGroup>
       <Col sm="12" md={{ size: 9, offset: 4 }}>
-        <FontAwesomeIcon style={{ 'color': "#007bff" }} size={'3x'} icon={faAmbulance} />
+        <FontAwesomeIcon style={{ 'color': "#376898" }} size={'3x'} icon={faAmbulance} />
       </Col>
     </FormGroup>
 

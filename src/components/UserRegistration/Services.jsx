@@ -24,7 +24,7 @@ function QuestionsComponent({ values, errors, touched, onServiceChange, setField
 
     <FormGroup>
       <Col sm="12" md={{ size: 9, offset: 4 }}>
-        <FontAwesomeIcon style={{ 'color': "#007bff" }} size={'3x'} icon={faCog} />
+        <FontAwesomeIcon style={{ 'color': "#376898" }} size={'3x'} icon={faCog} />
       </Col>
     </FormGroup>
     <FormGroup>

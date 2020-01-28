@@ -1,9 +1,8 @@
-
 import React, { Component, Fragment } from 'react';
 import { MainForm } from './MainForm';
 import NavbarComponent from '../common/NavBar';
 
-class ProfileComponent extends Component {
+class MainRegistrationComponent extends Component {
     render() {
         return (
             <Fragment>
@@ -16,5 +15,5 @@ class ProfileComponent extends Component {
     }
 }
 
-export default ProfileComponent;
+export default MainRegistrationComponent;
 

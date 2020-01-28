@@ -3,9 +3,9 @@ import { FormGroup, Col } from "reactstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStopwatch } from '@fortawesome/free-solid-svg-icons';
 import {
-    Formik,
+    // Formik,
 
-    Form,
+    // Form,
     Field,
 
     ErrorMessage,
@@ -18,7 +18,7 @@ export function Availability({ values, errors, touched }) {
         <Fragment>
             <FormGroup>
                 <Col sm="12" md={{ size: 9, offset: 4 }}>
-                    <FontAwesomeIcon style={{ 'color': "#007bff" }} size={'3x'} icon={faStopwatch} />
+                    <FontAwesomeIcon style={{ 'color': "#195289" }} size={'3x'} icon={faStopwatch} />
                 </Col>
             </FormGroup>
 
@@ -98,7 +98,7 @@ export function Availability({ values, errors, touched }) {
                             disabled={true}
                             name="availableDays.monday"
                             type="text"
-                            value="monday"
+                            value="Monday"
                             className={'form-control'} />
                         <ErrorMessage name="Monday" component="div" className="invalid-feedback" />
                     </div>

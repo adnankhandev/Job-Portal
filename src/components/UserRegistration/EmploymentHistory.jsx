@@ -13,7 +13,7 @@ const EmpHistory = ({ values, errors, touched }) =>
 
       <FormGroup>
         <Col sm="12" md={{ size: 9, offset: 4 }}>
-          <FontAwesomeIcon style={{ 'color': "#007bff" }} size={'2x'} icon={faHistory} />
+          <FontAwesomeIcon style={{ 'color': "#376898" }} size={'2x'} icon={faHistory} />
         </Col>
       </FormGroup>
       <FieldArray
@@ -92,7 +92,7 @@ const EmpHistory = ({ values, errors, touched }) =>
 
                       <FontAwesomeIcon
                         onClick={() => remove(index)
-                        } style={{ 'color': "#007bff" }} size={'1x'} icon={faTrash} />
+                        } style={{ 'color': "#376898" }} size={'1x'} icon={faTrash} />
 
                     </FormGroup>
 
@@ -169,7 +169,7 @@ const EmpHistory = ({ values, errors, touched }) =>
               ))}
             <div className="row">
 
-              <FontAwesomeIcon style={{ 'color': "#007bff", margin: 'auto' }} size={'2x'} onClick={() => {
+              <FontAwesomeIcon style={{ 'color': "#376898", margin: 'auto' }} size={'2x'} onClick={() => {
                 push({
                   employerName: '',
                   employerTelNumber: '',

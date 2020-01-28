@@ -15,7 +15,7 @@ export const References = ({ values, errors, touched, props }) =>
 
       <FormGroup>
         <Col sm="12" md={{ size: 9, offset: 4 }}>
-          <FontAwesomeIcon style={{ 'color': "#007bff" }} size={'3x'} icon= {faAddressCard} />
+          <FontAwesomeIcon style={{ 'color': "#376898" }} size={'3x'} icon= {faAddressCard} />
         </Col>
       </FormGroup>
       {/* {values.employmentReferences.length > 1 && <Example values={values.employmentReferences} />} */}
@@ -60,7 +60,7 @@ export const References = ({ values, errors, touched, props }) =>
 
                       <FontAwesomeIcon
                         onClick={() => remove(index)
-                        } style={{ 'color': "#007bff" }} size={'1x'} icon={faTrash} />
+                        } style={{ 'color': "#376898" }} size={'1x'} icon={faTrash} />
 
                     </FormGroup>
 
@@ -103,7 +103,7 @@ export const References = ({ values, errors, touched, props }) =>
               ))}
             <div className="row">
 
-              <FontAwesomeIcon style={{ 'color': "#007bff",margin:'auto' }} size={'2x'} onClick={() => {
+              <FontAwesomeIcon style={{ 'color': "#376898",margin:'auto' }} size={'2x'} onClick={() => {
                 push({
                   employerName: '',
                   employerTelNumber: '',

@@ -5,7 +5,7 @@ import Select from 'react-select';
 export const SelectField = ({
   options,
   field,
-  form,
+  // form,
   isMulti,
   isDisabled,
   defaultInputValue,
@@ -13,11 +13,11 @@ export const SelectField = ({
   placeholder,
   value,
   onChange,
-  defaultText,
+  // defaultText,
   onBlur,
   className,
   styles,
-  classNamePrefix
+  // classNamePrefix
   // isClearable
 }) => (
 

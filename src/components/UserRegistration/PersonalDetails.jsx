@@ -1,30 +1,14 @@
 import React, { Component, Fragment } from "react";
 import { FormGroup, Col } from "reactstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserCircle, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import DatePicker from 'react-datepicker';
+import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { DatePickerField } from '../common/DateField'
-import * as moment from 'moment';
-import ReactFlagsSelect from 'react-flags-select';
 
 import {
-  Formik,
-
-  Form,
   Field,
-
   ErrorMessage,
 } from 'formik';
-import * as Yup from 'yup';
-import Label from "reactstrap/lib/Label";
 import { SelectField } from "../common/SelectField";
-
-
-const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' },
-];
 
 const customStyles = {
   option: (provided, state) => ({
@@ -57,13 +41,8 @@ const customStyles = {
 const PersonalDetails = ({ values, errors, touched, setFieldValue }) => (
 
   <Fragment>
-    {/* <pre>{JSON.stringify(values, null, 2)}</pre>
-    <pre>{JSON.stringify(errors, null, 2)}</pre> */}
-    <FormGroup>
-      <Col sm="12" md={{ size: 9, offset: 4 }}>
-        <FontAwesomeIcon style={{ 'color': "#007bff" }} size={'3x'} icon={faUserCircle} />
-      </Col>
-    </FormGroup>
+    
+    <FontAwesomeIcon style={{ 'color': "#376898" }} size={'3x'} icon={faUserCircle} />
 
     <FormGroup>
       <Col sm="12" md={{ size: 10, offset: 1 }}>

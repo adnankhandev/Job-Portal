@@ -1,31 +1,33 @@
 import RestUtilities from './RestUtilities';
 import AuthStore from './../stores/Auth';
 
-
+const BASEURL = "https://job-portal-api1.herokuapp.com/api/v1"
 
 
 export default class Auth {
     static isSignedIn() {
+        // alert(!!AuthStore.getToken())
         return !!AuthStore.getToken();
     }
 
     signIn(data) {
-        return RestUtilities.post(`https://job-portal-api1.herokuapp.com/api/v1/login`, data
-        )
+        return RestUtilities.post(`${BASEURL}/login`, data)
             .then((response) => {
-                debugger
+                // debugger
                 if (!response.is_error) {
                     AuthStore.setToken(response.content.access_token);
                 }
+                console.log("Login response: ", response);
                 return response;
+            }).catch(error => {
+                console.log("Login error: ", error);
             });
     }
 
 
 
     register(data) {
-        return RestUtilities.post(`https://job-portal-api1.herokuapp.com/api/v1/registration/initial`, data
-        )
+        return RestUtilities.post(`${BASEURL}/registration/initial`, data)
             .then((response) => {
                 debugger
                 if (!response.is_error) {
@@ -47,5 +49,6 @@ export default class Auth {
 
     signOut() {
         AuthStore.removeToken();
+        AuthStore.removeUser();
     }
 }

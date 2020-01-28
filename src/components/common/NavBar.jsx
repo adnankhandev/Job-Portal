@@ -8,8 +8,8 @@ import {
   NavItem,
   NavLink,
   NavbarText
-
 } from 'reactstrap';
+import {Badge} from "rsuite";
 import Button from 'reactstrap/lib/Button';
 import { Link } from 'react-router-dom';
 
@@ -34,31 +34,38 @@ const NavbarComponent = (props) => {
         <Collapse isOpen={isOpen} navbar>
           <Nav className="mr-auto" navbar>
             <NavItem>
-              <NavLink href="/components/">Home</NavLink>
+              <NavLink href="/jobs/">Home</NavLink>
             </NavItem>
+            {AuthService.isSignedIn() && <NavItem>
+              <Badge>
+               <NavLink href="/full-registration/">Registration</NavLink>
+              </Badge>
+            </NavItem>}
             <NavItem>
               <NavLink href="">Info</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/components/">Jobs</NavLink>
+              <NavLink href="/jobs">Jobs</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/components/">Contact Us</NavLink>
+              <NavLink href="">Contact Us</NavLink>
             </NavItem>
           </Nav>
-          {(props.location.pathname === '/register' || props.location.pathname === '/') && <Link to='./login'>
+          {!AuthService.isSignedIn() && 
+          <Link to='./login'>
             <Button className='custom-button'>
               Log In </Button>
           </Link>}
-          {(props.location.pathname === '/login' || props.location.pathname === '/') && <Link to='./register'>
+          {!AuthService.isSignedIn() && 
+          <Link to='./register'>
             <Button className='custom-button'>
               Sign Up </Button>
 
           </Link>}
-          {props.location.pathname === '/profile' &&
-            <NavbarText>{Auth.getUser()}</NavbarText>
+          {AuthService.isSignedIn() &&
+            <NavbarText>Welcome {Auth.getUser()}!</NavbarText>
           }
-          {props.location.pathname === '/profile' &&
+          {AuthService.isSignedIn() &&
             <NavbarText style={{marginLeft:'30px'}}>
               <Link onClick={()=>{auth.signOut()}} to='/'>
                 <Button className='custom-button'>
