@@ -101,7 +101,6 @@ class Login extends Component {
             </FlexboxGrid>
           </Content>
           <Footer>
-            <ServicesCard />
           </Footer>
         </Container>
       </div>

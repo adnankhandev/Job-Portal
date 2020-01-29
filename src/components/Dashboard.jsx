@@ -11,7 +11,7 @@ class Dashboard extends Component {
           <Header>
             <NavbarComponent/>
             <Divider/>
-            <NavSideBarComponent/>
+            <NavSideBarComponent activeKey={"1"}/>
           </Header>
           <Content>
           </Content>

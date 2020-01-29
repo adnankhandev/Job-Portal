@@ -65,7 +65,6 @@ export default class RestUtilities {
                         return response.text();
                     }
                 }).then((responseContent) => {
-
                     if (responseContent.status === 401) {
                         AuthStore.removeToken();
                     }

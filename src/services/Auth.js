@@ -3,7 +3,6 @@ import AuthStore from './../stores/Auth';
 
 const BASEURL = "https://job-portal-api1.herokuapp.com/api/v1"
 
-
 export default class Auth {
     static isSignedIn() {
         // alert(!!AuthStore.getToken())
