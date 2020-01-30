@@ -19,56 +19,72 @@ from flask_jwt_extended import (
 
 parser = reqparse.RequestParser()
 
-# Request schema
-# 	{
-# 		"userId": "testuser4",
-# 		"references": [
-# 			{
-# 				"email": "14besemfatima@seecs.edu.pk",
-# 			},
-# 			{
-# 				"email": "adnanak556@gmail.com",
-# 			},
-# 			{
-# 				"email": "maryem.fatima96@gmail.com",
-# 			},
-# 			{
-# 				"email": "maryem.fatima96@gmail.com",
-# 			},
-# 			{
-# 				"email": "maryem.fatima96@gmail.com",
-# 			}
-# 			]
+# /api/v1/registration/user/<userId>/references/
+# {
+# 	"references": [
+# 		{
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# 		},
+# 		{
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# 		},
+# 		{
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# 		},
+# 		{
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# 		},
+# 		{
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# 		}
+# 		]
 # }
-
-class ReferenceRegistration(Resource):
-    def post(self):
+class ReferenceRegistration (Resource):
+    def post(self, userId):
         reference_details = [0] * 5
         parser.add_argument("references", action='append')
-        parser.add_argument("userId", required=True)
 
         data = parser.parse_args()
-        user = Users.objects(id=data['userId']).first()
+        user = Users.objects(id=userId).first()
         if not user:
-            return {'error': 'User {} doesn\'t exist'.format(data['userId'])}, 404
+            return {'error': 'User {} doesn\'t exist'.format(data['username'])}, 404
             user = json.loads(user.to_json())
-         ## Adding refernces against user
+        ## Adding refernces against user
         try:
             for i in range(5):
                 current_obj = data['references'][i]
                 reference_info = eval(current_obj)
                 print(reference_info)
-                reference_details[i] = Users.References(email=reference_info['email'], results="random string for now").save()
+                reference_details[i] = References(email=reference_info['email'] ).save()
                 ## send an email to this user
-                email.sendEmail.post(reference_info['email'])
-
+                url = 'jobportal.com/referenceStuff/{}'.format(reference_details[i].id)
+                email.sendReferenceEmail.sendEmail(reference_info['email'], url)
+            print(user)
             updatedUser = user.update(reference_details=reference_details)
-
+            print(updatedUser)
             return {
-                'message': 'User {} references have been created'.format(updatedUser)
+                'message': 'User {} references have been added'.format(user['username'])
             }, 200
-        except:
-            return {'message': 'Something went wrong'}, 500
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
 
 
 # Request schema
@@ -88,18 +104,16 @@ class ReferenceRegistration(Resource):
 # }
 
 class SaveReferenceAnswers(Resource):
-    def post(self):
-        parser.add_argument("referenceId", required=True)
-        parser.add_argument("userId")
+    def post(self, referenceId):
         parser.add_argument("results", action='append')
 
         data = parser.parse_args()
         try:
-            reference = References.objects(id=data['referenceId']).first()
+            reference = References.objects(id=referenceId).first()
             if not reference:
                 return {
-                    'message': 'Reference does not exist'
-                }
+                    'message': 'Invalid url'
+                }, 400
             updated_reference = reference.update(results=data['results'])
             return {
                 'message': 'User {} references have been created'.format(updated_reference)

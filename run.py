@@ -36,7 +36,7 @@ api.add_resource(resources.AddEmergencyContact, '/api/v1/registration/user/<user
 api.add_resource(resources.AddEmployementHistory, '/api/v1/registration/user/<userId>/employement-details', methods=['POST'])
 api.add_resource(resources.AddGeneralQuestionAnswer, '/api/v1/registration/user/<userId>/general-question-answers', methods=['POST'])
 api.add_resource(resources.UpdateUserType, '/api/v1/registration/user/<userId>/update-user-type', methods=['PATCH'])
-api.add_resource(resources.ReferenceRegistration, '/api/v1/registration/user/<userId>/references', methods=['POST'])
+api.add_resource(references.ReferenceRegistration, '/api/v1/registration/user/<userId>/references', methods=['POST'])
 api.add_resource(resources.AddServices, '/api/v1/registration/user/<userId>/services', methods=['POST'])
 # Healt check
 api.add_resource(resources.test, '/api/v1/test')
@@ -56,8 +56,7 @@ api.add_resource(jobs.Job, '/api/v1/jobs/<jobId>', methods=['GET'])
 # External email and message service
 api.add_resource(message.sendMessage, '/api/v1/sendMessage/<number>', methods=['POST'])
 api.add_resource(email.sendEmail, '/api/v1/sendEmail/<email>', methods=['POST'])
-api.add_resource(references.ReferenceRegistration, '/api/v1/registration/references', methods=['POST'])
-api.add_resource(references.SaveReferenceAnswers, '/api/v1/references/results', methods=['POST'])
+api.add_resource(references.SaveReferenceAnswers, '/api/v1/references/<referenceId>/results', methods=['POST'])
 # Add general questions
 api.add_resource(generalQuestions.GeneralQuestions, '/api/v1/general-questions', methods=['POST', 'GET'])
 # api.add_resource(generalQuestions.GeneralQuestions, '/api/general-question/<id>/update', methods=['PUT'])
