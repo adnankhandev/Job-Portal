@@ -16,8 +16,8 @@ class References(me.Document):
     name: me.StringField()
     contact_number: me.StringField()
     email = me.StringField()
+    results = me.ListField(me.StringField())
     address = me.StringField()
-    results = me.StringField()
 
 class EmergencyContact(me.Document):
     meta = {'collection': 'emergency_contact'}

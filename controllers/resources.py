@@ -154,73 +154,6 @@ class test(Resource):
     def get(self):
         return Users.get_all()
 
-
-# /api/v1/registration/user/<userId>/references/
-# {
-# 	"references": [
-# 		{
-#           "name": "testname",
-#           "contact_number": "03333333333",
-#           "address": "ajdrhkewhfk", 
-# 		    "email": "14besemfatima@seecs.edu.pk",
-# 		},
-# 		{
-#           "name": "testname",
-#           "contact_number": "03333333333",
-#           "address": "ajdrhkewhfk", 
-# 		    "email": "14besemfatima@seecs.edu.pk",
-# 		},
-# 		{
-#           "name": "testname",
-#           "contact_number": "03333333333",
-#           "address": "ajdrhkewhfk", 
-# 		    "email": "14besemfatima@seecs.edu.pk",
-# 		},
-# 		{
-#           "name": "testname",
-#           "contact_number": "03333333333",
-#           "address": "ajdrhkewhfk", 
-# 		    "email": "14besemfatima@seecs.edu.pk",
-# 		},
-# 		{
-#           "name": "testname",
-#           "contact_number": "03333333333",
-#           "address": "ajdrhkewhfk", 
-# 		    "email": "14besemfatima@seecs.edu.pk",
-# 		}
-# 		]
-# }
-class ReferenceRegistration(Resource):
-    def post(self, userId):
-        reference_details = [0] * 5
-        parser.add_argument("references", action='append')
-
-        data = parser.parse_args()
-        user = Users.objects(id=userId).first()
-        if not user:
-            return {'error': 'User {} doesn\'t exist'.format(data['username'])}, 404
-            user = json.loads(user.to_json())
-        ## Adding refernces against user
-        try:
-            for i in range(5):
-                current_obj = data['references'][i]
-                reference_info = eval(current_obj)
-                print(reference_info)
-                reference_details[i] = References(email=reference_info['email'], results="random string for now").save()
-                ## send an email to this user
-                email.sendEmail.post(reference_info['email'])
-            print(user)
-            updatedUser = user.update(reference_details=reference_details)
-            print(updatedUser)
-            return {
-                'message': 'User {} references have been added'.format(user['username'])
-            }, 200
-        except Exception as ex:
-            print(ex)
-            template = "{0}:{1!r}"
-            message = template.format(type(ex).__name__, ex.args)
-            return {'error': message}, 500
-
 # /api/v1/registration/user/<userId>/emergency-contact-details
 # {
 #   "fullname": "testcontact",
@@ -349,6 +282,7 @@ class AddGeneralQuestionAnswer(Resource):
         parser.add_argument("general_question_answers", action="append", required=True)
         data = parser.parse_args()
         try:
+            print(data)
             currentUser = Users.objects(id=userId).first()
             print(currentUser)
             if not currentUser:
