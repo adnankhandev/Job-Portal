@@ -49,17 +49,17 @@ api.add_resource(resources.UserLogoutRefresh, '/api/v1/logout/refresh')
 api.add_resource(resources.TokenRefresh, '/api/v1/token/refresh')
 # Services
 api.add_resource(Service.Services, '/api/v1/service', methods=['GET', 'POST'])
-api.add_resource(Service.Service, '/api/v1/service/<serviceId>', methods=['GET'])
+api.add_resource(Service.Service, '/api/v1/service/<serviceId>', methods=['GET', 'PUT', 'DELETE'])
 # Jobs
 api.add_resource(jobs.Jobs, '/api/v1/jobs', methods=['GET', 'POST'])
-api.add_resource(jobs.Job, '/api/v1/jobs/<jobId>', methods=['GET'])
+api.add_resource(jobs.Job, '/api/v1/jobs/<jobId>', methods=['GET', 'DELETE'])
 # External email and message service
 api.add_resource(message.sendMessage, '/api/v1/sendMessage/<number>', methods=['POST'])
 api.add_resource(email.sendEmail, '/api/v1/sendEmail/<email>', methods=['POST'])
 api.add_resource(references.SaveReferenceAnswers, '/api/v1/references/<referenceId>/results', methods=['POST'])
 # Add general questions
 api.add_resource(generalQuestions.GeneralQuestions, '/api/v1/general-questions', methods=['POST', 'GET'])
-# api.add_resource(generalQuestions.GeneralQuestions, '/api/general-question/<id>/update', methods=['PUT'])
+api.add_resource(generalQuestions.GeneralQuestion, '/api/v1/general-question/<GeneralQuestionId>', methods=['PUT', 'GET'])
 # User
 api.add_resource(users.users, '/api/v1/users', methods=['GET'])
 api.add_resource(users.user, '/api/v1/users/<userId>', methods=['GET'])
