@@ -2,6 +2,7 @@ from utilities import (
     min_length
 )
 from flask_restful import Resource, reqparse
+from flask import jsonify, make_response
 from models import Services as rt
 import json
 
@@ -31,14 +32,11 @@ class Services(Resource):
             return {'error': message}, 400
     
     def get(self, id=None):
+        result = {}
         try:
-            if id is None:
-                response = rt.Services.objects.all()
-            else:
-                response = rt.Services.objects.get(id=id)
-            return {
-                'response': '{}'.format(json.loads(response.to_json()))
-            }, 200
+            response = rt.Services.objects.all()
+            result['response'] = response
+            return make_response(jsonify(result), 200)
         except Exception as ex:
             print(ex)
             template = "{0}:{1!r}"
@@ -47,13 +45,13 @@ class Services(Resource):
 
 class Service(Resource):
     def get(self, serviceId):
+        result = {}
         try:
             response = rt.Services.objects.get(id=serviceId)
             if not response:
                 return {'error': 'Service doesn\'t exist'}, 404
-            return {
-                'response': '{}'.format(json.loads(response.to_json()))
-            }, 200
+            result['response'] = response
+            return make_response(jsonify(result), 200)
         except Exception as ex:
             print(ex)
             template = "{0}:{1!r}"

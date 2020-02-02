@@ -1,6 +1,7 @@
 from utilities import (
     min_length
 )
+from flask import jsonify, make_response
 from flask_restful import Resource, reqparse
 from models.Questions import Questions
 import json
@@ -33,24 +34,38 @@ class GeneralQuestions(Resource):
             return {'error': message}, 500
     
     def get(self, id=None):
+        result = {}
         try:
             if id is None:
                 print(Questions)
                 response = Questions.objects.all()
             else:
                 response = Questions.objects.get(id=id)
-            return {
-                'response': '{}'.format(json.loads(response.to_json()))
-            }, 200
+            result['response'] = response
+            return make_response(jsonify(result), 200)
         except Exception as ex:
             print(ex)
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
-    
-    def put(self, id=None):
+
+class GeneralQuestion(Resource):
+    def get(self, GeneralQuestionId):
+        result = {}
         try:
-            response = Questions.objects(id=id).first()
+            response = Questions.objects.get(id=GeneralQuestionId)
+            result['response'] = response
+            return make_response(jsonify(result), 200)
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 400
+
+    def put(self, GeneralQuestionId):
+        additional_questions = {}
+        try:
+            response = Questions.objects(id=GeneralQuestionId).first()
             if response is None:
                 print(Questions)
                 return {
@@ -60,11 +75,11 @@ class GeneralQuestions(Resource):
                 parser.add_argument('general_questions', action='append', help='This field cannot be blank', required=True)
                 print(parser)
                 data = parser.parse_args()
-                additional_questions = response['general_questions'].append(data['general_questions'])
+                additional_questions = response['general_questions'] + data['general_questions']
                 updated_object = response.update(general_questions = additional_questions)
                 print(updated_object)
                 return {
-                    'response': '{}'.format(json.loads(response.to_json()))
+                    'response': 'general questions updated'
                 }, 200
         except Exception as ex:
             print(ex)
