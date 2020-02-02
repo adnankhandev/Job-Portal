@@ -57,3 +57,39 @@ class Service(Resource):
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 400
+    
+    def put(self, serviceId):
+        parser.add_argument('service', help='This field cannot be blank', required=True)
+        parser.add_argument('questions', help='This field cannot be blank', action='append', required=True)
+        print(parser)
+        data = parser.parse_args()
+        try:
+            response = rt.Services.objects.get(id=serviceId)
+            if not response:
+                return {'error': 'Service doesn\'t exist'}, 404
+            updated_service = response.update(service=data['service'], questions=data['questions'])
+            
+            return {
+                'response': 'Service has been updated'
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 400
+
+    def delete(self, serviceId):
+        try:
+            response = rt.Services.objects.get(id=serviceId)
+            if not response:
+                return {'error': 'Job doesn\'t exist'}, 404
+            updated_service = response.delete()
+            print(updated_service)
+            return {
+                'response': 'Service has been deleted'
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 400
