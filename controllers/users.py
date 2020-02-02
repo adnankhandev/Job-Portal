@@ -6,7 +6,7 @@ from models.Users import Users
 from models import Services
 import json
 import bcrypt
-from flask import request
+from flask import request, jsonify, make_response
 from services import email
 from flask_jwt_extended import (
     create_access_token, 
@@ -25,14 +25,11 @@ parser = reqparse.RequestParser()
 
 class user(Resource):
     def get(self, userId):
+        result = {}
         try:
-            if userId is None:
-                response = Users.objects.all()
-            else:
-                response = Users.objects.get(id=userId)
-            return {
-                'response': '{}'.format(json.loads(response.to_json()))
-            }, 200
+            response = Users.objects.get(id=userId)
+            result['response'] = response
+            return make_response(jsonify(result), 200)
         except Exception as ex:
             print(ex)
             template = "{0}:{1!r}"
@@ -41,11 +38,11 @@ class user(Resource):
 
 class users(Resource):
     def get(self):
+        result = {}
         try:
             response = Users.objects.all()
-            return {
-                'response': '{}'.format(json.loads(response.to_json()))
-            }, 200
+            result['response'] = response
+            return make_response(jsonify(result), 200)
         except Exception as ex:
             print(ex)
             template = "{0}:{1!r}"

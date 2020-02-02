@@ -1,6 +1,7 @@
 from utilities import (
     min_length
 )
+from flask import jsonify, make_response
 from flask_restful import Resource, reqparse
 from models import Jobs as jobs
 import json
@@ -40,11 +41,11 @@ class Jobs(Resource):
             return {'error': message}, 400
 
     def get(self):
+        result = {}
         try:
             response = jobs.Jobs.objects.all()
-            return {
-                'response': '{}'.format(json.loads(response.to_json()))
-            }, 200
+            result['response'] = response
+            return make_response(jsonify(result), 200)
         except Exception as ex:
             print(ex)
             template = "{0}:{1!r}"
@@ -53,12 +54,11 @@ class Jobs(Resource):
 
 class Job(Resource):
     def get(self, jobId):
+        result = {}
         try:
             response = jobs.Jobs.objects.get(id=jobId)
-            print(response)
-            return {
-                'response': '{}'.format(json.loads(response.to_json()))
-            }, 200
+            result['response'] = response
+            return make_response(jsonify(result), 200)
         except Exception as ex:
             print(ex)
             template = "{0}:{1!r}"

@@ -59,7 +59,7 @@ api.add_resource(email.sendEmail, '/api/v1/sendEmail/<email>', methods=['POST'])
 api.add_resource(references.SaveReferenceAnswers, '/api/v1/references/<referenceId>/results', methods=['POST'])
 # Add general questions
 api.add_resource(generalQuestions.GeneralQuestions, '/api/v1/general-questions', methods=['POST', 'GET'])
-# api.add_resource(generalQuestions.GeneralQuestions, '/api/general-question/<id>/update', methods=['PUT'])
+api.add_resource(generalQuestions.GeneralQuestion, '/api/v1/general-question/<GeneralQuestionId>', methods=['PUT', 'GET'])
 # User
 api.add_resource(users.users, '/api/v1/users', methods=['GET'])
 api.add_resource(users.user, '/api/v1/users/<userId>', methods=['GET'])
