@@ -4,6 +4,8 @@ import Container from "reactstrap/lib/Container";
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Services from './components/Services';
+import Applicants from './components/Applicants';
+import Jobs from './components/Jobs';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 // import UserProfile from "./components/UserProfile/UserProfile";
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,6 +22,8 @@ class App extends Component {
             <DefaultRoute exact path={`/login`} component={Login} />
             <PrivateRoute exact path={`/`} component={Dashboard} />
             <PrivateRoute exact path={`/Services`} component={Services} />
+            <PrivateRoute exact path={`/Applicants`} component={Applicants} />
+            <PrivateRoute exact path={`/Jobs`} component={Jobs} />
           </Switch>
         </Container>
       </BrowserRouter>

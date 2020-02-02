@@ -51,18 +51,16 @@ export default class RestUtilities {
             return fetch(url, {
                     method: method,
                     headers: headers,
-
                 })
                 .then((response) => {
                     if (response.status === 401) {
                         AuthStore.removeToken();
-
                     }
                     let responseContentType = response.headers.get("content-type");
                     if (responseContentType && responseContentType.indexOf("application/json") !== -1) {
                         return response.json();
                     } else {
-                        return response.text();
+                        return response.json();
                     }
                 }).then((responseContent) => {
                     if (responseContent.status === 401) {
@@ -98,6 +96,7 @@ export default class RestUtilities {
                     }
 
                     if (response.ok) {
+                        console.log("here as well: ", response)
                         return response.json().then((responseContent) => {
                             let response = {
                                 is_error: false,

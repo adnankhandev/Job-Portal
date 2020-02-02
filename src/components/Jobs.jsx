@@ -4,7 +4,7 @@ import { NavbarComponent, NavSideBarComponent } from "./common/NavBar";
 import { Datatable } from "./common/Datatable";
 
 
-class Services extends Component {
+class Jobs extends Component {
     render() {
         const columns = [
             {
@@ -14,17 +14,29 @@ class Services extends Component {
                 maxWidth: "100px"
             },
             {
-                name: 'Service Name',
-                selector: 'service_name',
+                name: 'Customer Name',
+                selector: 'customer_name',
                 sortable: true,
-                maxWidth: "400px"
+                maxWidth: "300px"
             },
             {
-                name: 'Description',
-                selector: 'description',
+                name: 'Job Description',
+                selector: 'job_description',
                 sortable: true,
                 wrap: true
-            }
+            },
+            {
+                name: 'Wages',
+                selector: 'wages',
+                sortable: true,
+                maxWidth: "100px"
+            },
+            {
+                name: 'Date of Job',
+                selector: 'date',
+                sortable: true,
+                maxWidth: "200px"
+            },
         ];
         return (
             <Container>
@@ -37,7 +49,7 @@ class Services extends Component {
                         <NavSideBarComponent activeKey={"3"} />
                     </Sidebar>
                     <Content>
-                        <Datatable title={"Services"} columns={columns} endpoint={"/service"} data={2}/>
+                        <Datatable title={"Jobs"} columns={columns} endpoint={"/jobs"} data={3}/>
                     </Content>
                 </Container>
                 <Footer></Footer>
@@ -47,4 +59,4 @@ class Services extends Component {
 }
 
 
-export default Services;
+export default Jobs;

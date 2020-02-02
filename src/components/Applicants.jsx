@@ -4,7 +4,7 @@ import { NavbarComponent, NavSideBarComponent } from "./common/NavBar";
 import { Datatable } from "./common/Datatable";
 
 
-class Services extends Component {
+class Applicants extends Component {
     render() {
         const columns = [
             {
@@ -14,17 +14,30 @@ class Services extends Component {
                 maxWidth: "100px"
             },
             {
-                name: 'Service Name',
-                selector: 'service_name',
+                name: 'First Name',
+                selector: 'firstName',
                 sortable: true,
-                maxWidth: "400px"
             },
             {
-                name: 'Description',
-                selector: 'description',
+                name: 'Last Name',
+                selector: 'lastName',
                 sortable: true,
-                wrap: true
-            }
+            },
+            {
+                name: 'City',
+                selector: 'city',
+                sortable: true,
+            },
+            {
+                name: 'Street',
+                selector: 'street',
+                sortable: true,
+            },
+            {
+                name: 'Company Name',
+                selector: 'companyName',
+                sortable: true,
+            },
         ];
         return (
             <Container>
@@ -34,10 +47,10 @@ class Services extends Component {
                 </Header>
                 <Container>
                     <Sidebar>
-                        <NavSideBarComponent activeKey={"3"} />
+                        <NavSideBarComponent activeKey={"2"} />
                     </Sidebar>
                     <Content>
-                        <Datatable title={"Services"} columns={columns} endpoint={"/service"} data={2}/>
+                        <Datatable title={"Applicants"} columns={columns} endpoint={"/users"} data={1}/>
                     </Content>
                 </Container>
                 <Footer></Footer>
@@ -46,5 +59,4 @@ class Services extends Component {
     }
 }
 
-
-export default Services;
+export default Applicants;
