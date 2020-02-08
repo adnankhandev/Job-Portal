@@ -8,14 +8,7 @@ import json
 import bcrypt
 from flask import request, jsonify, make_response
 from services import email
-from flask_jwt_extended import (
-    create_access_token, 
-    create_refresh_token, 
-    jwt_required, 
-    jwt_refresh_token_required, 
-    get_jwt_identity, 
-    get_raw_jwt
-)
+from flask_jwt_extended import jwt_required
 
 parser = reqparse.RequestParser()
 
@@ -24,6 +17,7 @@ parser = reqparse.RequestParser()
 ####################################################################
 
 class user(Resource):
+    @jwt_required
     def get(self, userId):
         result = {}
         try:
@@ -37,6 +31,7 @@ class user(Resource):
             return {'error': message}, 400
 
 class users(Resource):
+    @jwt_required
     def get(self):
         result = {}
         try:
@@ -48,3 +43,4 @@ class users(Resource):
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 400
+

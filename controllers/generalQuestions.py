@@ -5,6 +5,7 @@ from flask import jsonify, make_response
 from flask_restful import Resource, reqparse
 from models.Questions import Questions
 import json
+from flask_jwt_extended import jwt_required
 
 parser = reqparse.RequestParser()
 
@@ -14,6 +15,7 @@ parser = reqparse.RequestParser()
 
 
 class GeneralQuestions(Resource):
+    @jwt_required
     def post(self):
         parser.add_argument('general_questions', action='append', help='This field cannot be blank', required=True)
         data = parser.parse_args()
@@ -33,6 +35,7 @@ class GeneralQuestions(Resource):
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
     
+    @jwt_required
     def get(self, id=None):
         result = {}
         try:
@@ -50,6 +53,7 @@ class GeneralQuestions(Resource):
             return {'error': message}, 500
 
 class GeneralQuestion(Resource):
+    @jwt_required
     def get(self, GeneralQuestionId):
         result = {}
         try:
@@ -61,7 +65,8 @@ class GeneralQuestion(Resource):
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 400
-
+    
+    @jwt_required
     def put(self, GeneralQuestionId):
         additional_questions = {}
         try:

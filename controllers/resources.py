@@ -28,6 +28,7 @@ parser = reqparse.RequestParser()
 ####################################################################
 
 class AddPersonalDetails(Resource):
+    @jwt_required
     def post(self, userId):
         parser.add_argument('duration_of_stay_at_address')
         parser.add_argument('profile_picture')
@@ -163,6 +164,7 @@ class test(Resource):
 # }
 
 class AddEmergencyContact(Resource):
+    @jwt_required
     def post(self, userId):
         parser.add_argument("fullname", required=True)
         parser.add_argument("contact_number", required=True)
@@ -199,6 +201,7 @@ class AddEmergencyContact(Resource):
 # }
 
 class AddServices(Resource):
+    @jwt_required
     def post(self, userId):
         parser.add_argument("serviceIds", action="append")
         data = parser.parse_args()
@@ -242,6 +245,7 @@ class AddServices(Resource):
 # }
 
 class AddEmployementHistory(Resource):
+    @jwt_required
     def post(self, userId):
         parser.add_argument("employement_history", action="append", required=True)
         data = parser.parse_args()
@@ -279,6 +283,7 @@ class AddEmployementHistory(Resource):
 #     ]
 # }
 class AddGeneralQuestionAnswer(Resource):
+    @jwt_required
     def post(self, userId):
         parser.add_argument("general_question_answers", action="append", required=True)
         data = parser.parse_args()
@@ -302,6 +307,7 @@ class AddGeneralQuestionAnswer(Resource):
 #     user_type: 0/1/2  0 -> Applicant, 1-> helper, 2-> CMS
 # }
 class UpdateUserType(Resource):
+    @jwt_required
     def patch(self, userId):
         parser.add_argument("user_type", required=True)
         data = parser.parse_args()
@@ -332,6 +338,7 @@ class UpdateUserType(Resource):
 # }
 
 class AvailableHoursInfo(Resource):
+    @jwt_required
     def post(self, userId):
         parser.add_argument("available_hours", required=True)
         data = parser.parse_args()
