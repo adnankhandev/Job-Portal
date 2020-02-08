@@ -7,6 +7,7 @@ from models.Users import EmergencyContact
 from models.Users import EmployementHistory
 from models.Users import References
 from models import Services
+from ast import literal_eval
 import json
 import bcrypt
 from flask import request
@@ -311,6 +312,34 @@ class UpdateUserType(Resource):
                 return {'error': 'User doesn\'t exist'}, 404
             print(currentUser)
             updated_user = currentUser.update(user_type=data['user_type'])
+            return {
+                'message': 'user_type has been updated for {}'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+
+# {
+# 	"available_hours": {
+# 		"monday":  [hour, hour],
+# 		"tueday": [hour. hour],
+# 		"wednesday": [hour. hour],
+# 		"thursday": [hour, hour],
+# 		"friday": [hour, hour]
+# 	}
+# }
+
+class AvailableHoursInfo(Resource):
+    def post(self, userId):
+        parser.add_argument("available_hours", required=True)
+        data = parser.parse_args()
+        try:
+            currentUser = Users.objects(id=userId).first()
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            updated_user = currentUser.update(availible_hours=literal_eval(data['available_hours']))
             return {
                 'message': 'user_type has been updated for {}'.format(currentUser['username'])
             }, 200
