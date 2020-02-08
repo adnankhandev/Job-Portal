@@ -3,12 +3,14 @@ from utilities import (
 )
 from flask import jsonify, make_response
 from flask_restful import Resource, reqparse
+from flask_jwt_extended import jwt_required
 from models import Jobs as jobs
 import json
 
 parser = reqparse.RequestParser()
 
 class Jobs(Resource):
+    @jwt_required
     def post(self):
         parser.add_argument('title', help='This field cannot be blank', required=True)
         parser.add_argument('job_description', help='This field cannot be blank', required=True)
@@ -39,7 +41,8 @@ class Jobs(Resource):
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 400
-
+    
+    @jwt_required
     def get(self):
         result = {}
         try:
@@ -53,6 +56,7 @@ class Jobs(Resource):
             return {'error': message}, 400
 
 class Job(Resource):
+    @jwt_required
     def get(self, jobId):
         result = {}
         try:
@@ -64,7 +68,8 @@ class Job(Resource):
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 400
-
+            
+    @jwt_required
     def put(self, jobId):
         parser.add_argument('title', help='This field cannot be blank', required=True)
         parser.add_argument('job_description', help='This field cannot be blank', required=True)
@@ -94,7 +99,8 @@ class Job(Resource):
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 400
-    
+
+    @jwt_required  
     def delete(self, jobId):
         try:
             response = jobs.Jobs.objects.get(id=jobId)

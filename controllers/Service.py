@@ -3,12 +3,14 @@ from utilities import (
 )
 from flask_restful import Resource, reqparse
 from flask import jsonify, make_response
+from flask_jwt_extended import jwt_required
 from models import Services as rt
 import json
 
 parser = reqparse.RequestParser()
 
 class Services(Resource):
+    @jwt_required
     def post(self):
         parser.add_argument('service', help='This field cannot be blank', required=True)
         parser.add_argument('questions', help='This field cannot be blank', action='append', location='json', required=True)
@@ -30,7 +32,8 @@ class Services(Resource):
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 400
-    
+
+    @jwt_required
     def get(self, id=None):
         result = {}
         try:
@@ -44,6 +47,7 @@ class Services(Resource):
             return {'error': message}, 400
 
 class Service(Resource):
+    @jwt_required
     def get(self, serviceId):
         result = {}
         try:
@@ -58,6 +62,7 @@ class Service(Resource):
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 400
     
+    @jwt_required
     def put(self, serviceId):
         parser.add_argument('service', help='This field cannot be blank', required=True)
         parser.add_argument('questions', help='This field cannot be blank', action='append', required=True)
@@ -77,7 +82,8 @@ class Service(Resource):
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 400
-
+    
+    @jwt_required
     def delete(self, serviceId):
         try:
             response = rt.Services.objects.get(id=serviceId)
