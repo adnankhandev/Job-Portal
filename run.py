@@ -38,6 +38,7 @@ api.add_resource(resources.AddGeneralQuestionAnswer, '/api/v1/registration/user/
 api.add_resource(resources.UpdateUserType, '/api/v1/registration/user/<userId>/update-user-type', methods=['PATCH'])
 api.add_resource(references.ReferenceRegistration, '/api/v1/registration/user/<userId>/references', methods=['POST'])
 api.add_resource(resources.AddServices, '/api/v1/registration/user/<userId>/services', methods=['POST'])
+api.add_resource(resources.AvailableHoursInfo, '/api/v1/registration/user/<userId>/available-hours', methods=['POST'])
 # Healt check
 api.add_resource(resources.test, '/api/v1/test')
 # Login

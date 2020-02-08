@@ -7,6 +7,7 @@ from models.Users import EmergencyContact
 from models.Users import EmployementHistory
 from models.Users import References
 from models import Services
+from ast import literal_eval
 import json
 import bcrypt
 from flask import request
@@ -27,6 +28,7 @@ parser = reqparse.RequestParser()
 ####################################################################
 
 class AddPersonalDetails(Resource):
+    @jwt_required
     def post(self, userId):
         parser.add_argument('duration_of_stay_at_address')
         parser.add_argument('profile_picture')
@@ -162,6 +164,7 @@ class test(Resource):
 # }
 
 class AddEmergencyContact(Resource):
+    @jwt_required
     def post(self, userId):
         parser.add_argument("fullname", required=True)
         parser.add_argument("contact_number", required=True)
@@ -198,6 +201,7 @@ class AddEmergencyContact(Resource):
 # }
 
 class AddServices(Resource):
+    @jwt_required
     def post(self, userId):
         parser.add_argument("serviceIds", action="append")
         data = parser.parse_args()
@@ -241,6 +245,7 @@ class AddServices(Resource):
 # }
 
 class AddEmployementHistory(Resource):
+    @jwt_required
     def post(self, userId):
         parser.add_argument("employement_history", action="append", required=True)
         data = parser.parse_args()
@@ -278,6 +283,7 @@ class AddEmployementHistory(Resource):
 #     ]
 # }
 class AddGeneralQuestionAnswer(Resource):
+    @jwt_required
     def post(self, userId):
         parser.add_argument("general_question_answers", action="append", required=True)
         data = parser.parse_args()
@@ -301,6 +307,7 @@ class AddGeneralQuestionAnswer(Resource):
 #     user_type: 0/1/2  0 -> Applicant, 1-> helper, 2-> CMS
 # }
 class UpdateUserType(Resource):
+    @jwt_required
     def patch(self, userId):
         parser.add_argument("user_type", required=True)
         data = parser.parse_args()
@@ -311,6 +318,35 @@ class UpdateUserType(Resource):
                 return {'error': 'User doesn\'t exist'}, 404
             print(currentUser)
             updated_user = currentUser.update(user_type=data['user_type'])
+            return {
+                'message': 'user_type has been updated for {}'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+
+# {
+# 	"available_hours": {
+# 		"monday":  [hour, hour],
+# 		"tueday": [hour. hour],
+# 		"wednesday": [hour. hour],
+# 		"thursday": [hour, hour],
+# 		"friday": [hour, hour]
+# 	}
+# }
+
+class AvailableHoursInfo(Resource):
+    @jwt_required
+    def post(self, userId):
+        parser.add_argument("available_hours", required=True)
+        data = parser.parse_args()
+        try:
+            currentUser = Users.objects(id=userId).first()
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            updated_user = currentUser.update(availible_hours=literal_eval(data['available_hours']))
             return {
                 'message': 'user_type has been updated for {}'.format(currentUser['username'])
             }, 200
