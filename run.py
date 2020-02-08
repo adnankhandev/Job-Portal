@@ -11,7 +11,7 @@ from models.RevokedTokens import RevokedTokens
 from flask_mongoengine import MongoEngine
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-
+import urllib
 
 app = Flask(__name__)
 CORS(app)
@@ -68,6 +68,6 @@ api.add_resource(users.user, '/api/v1/users/<userId>', methods=['GET'])
 
 
 #Registering database
-DB_URI = "mongodb+srv://chameleon:kerberos@cluster0-sbsqw.mongodb.net/test?retryWrites=true&w=majority"
+DB_URI = "mongodb://admin:" + urllib.parse.quote("abc@123") + "@13.127.206.56/maid"
 app.config['MONGODB_HOST'] = DB_URI
 db = MongoEngine(app)
