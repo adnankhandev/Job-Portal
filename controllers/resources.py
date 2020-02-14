@@ -6,6 +6,7 @@ from models.Users import Users
 from models.Users import EmergencyContact
 from models.Users import EmployementHistory
 from models.Users import References
+from models.RevokedTokens import RevokedTokens
 from models import Services
 from ast import literal_eval
 import json
@@ -127,7 +128,7 @@ class UserLogoutAccess(Resource):
     def post(self):
         jti = get_raw_jwt()['jti']
         try:
-            revoked_token = Users.RevokedTokens(jti = jti)
+            revoked_token = RevokedTokens(jti = jti)
             revoked_token.save()
             return {'message': 'Access token has been revoked'}, 200
         except:
@@ -138,7 +139,7 @@ class UserLogoutRefresh(Resource):
     def post(self):
         jti = get_raw_jwt()['jti']
         try:
-            revoked_token = Users.RevokedTokens(jti = jti)
+            revoked_token = RevokedTokens(jti = jti)
             revoked_token.save()
             return {'message': 'Refresh token has been revoked'}, 200
         except:
