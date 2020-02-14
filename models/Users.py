@@ -5,7 +5,7 @@ from models import Services
 class PersonalDetails(me.Document):
     date_of_birth = me.DateField()
     nationality = me.StringField()
-    gender = me.StringField
+    gender = me.StringField()
     home_number = me.IntField()
     current_address = me.StringField()
     postcode = me.IntField()
@@ -58,6 +58,10 @@ class Users(me.Document):
     employement_history = me.ListField(me.ReferenceField('EmployementHistory'), reverse_delete_rule=1)
     availible_hours = me.DictField()
     general_question_answers = me.ListField()
+
+    profile_completness = me.FloatField() 
+    general_question_result = me.FloatField()
+    test_question_result = me.FloatField()
 
     @classmethod
     def find_user_by_username(cls, uname):
