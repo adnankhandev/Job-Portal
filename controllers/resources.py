@@ -347,7 +347,7 @@ class AvailableHoursInfo(Resource):
             currentUser = Users.objects(id=userId).first()
             if not currentUser:
                 return {'error': 'User doesn\'t exist'}, 404
-            updated_user = currentUser.update(availible_hours=literal_eval(data['available_hours']))
+            updated_user = currentUser.update(available_hours=literal_eval(data['available_hours']))
             return {
                 'message': 'user_type has been updated for {}'.format(currentUser['username'])
             }, 200
