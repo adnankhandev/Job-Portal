@@ -27,7 +27,7 @@ class GeneralQuestions(Resource):
         try:
             new_question.save()
             return {
-                'message': 'Service {} was created'.format(new_question)
+                'message': 'General Questions has been created'
             }, 200
         except Exception as ex:
             print(ex)

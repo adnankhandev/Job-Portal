@@ -4,6 +4,7 @@ from utilities import (
 from flask_restful import Resource, reqparse
 from models.Users import Users
 from models.Users import References
+from helpers.profileRating import UserHelper
 import json
 import bcrypt
 from flask import request
@@ -68,7 +69,11 @@ class ReferenceRegistration (Resource):
                 url = 'jobportal.com/referenceStuff/{}'.format(reference_details[i].id)
                 email.sendReferenceEmail.sendEmail(reference_info['email'], url)
             print(user)
-            updatedUser = user.update(reference_details=reference_details)
+            profile_rating = UserHelper.calulateUserRating(user)
+            updatedUser = user.update(
+                reference_details=reference_details,
+                profile_completness = profile_rating
+                )
             print(updatedUser)
             return {
                 'message': 'User {} references have been added'.format(user['username'])
