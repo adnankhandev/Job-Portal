@@ -26,8 +26,8 @@ class EmergencyContact(me.Document):
     relation = me.StringField()
     contact_number = me.IntField()
 
-class EmployementHistory(me.Document):
-    meta = {'collection': 'employement_history'}
+class EmploymentHistory(me.Document):
+    meta = {'collection': 'employment_history'}
 
     name = me.StringField()
     service_hours= me.IntField()
@@ -55,7 +55,7 @@ class Users(me.Document):
     reference_details = me.ListField(me.ReferenceField('References', reverse_delete_rule=1))
     emergency_contact_details = me.ReferenceField('EmergencyContact', reverse_delete_rule=1)
     services = me.ListField(me.ReferenceField('Services'), reverse_delete_rule=1)
-    employement_history = me.ListField(me.ReferenceField('EmployementHistory'), reverse_delete_rule=1)
+    employment_history = me.ListField(me.ReferenceField('EmploymentHistory'), reverse_delete_rule=1)
     available_hours = me.DictField()
     general_question_answers = me.ListField()
 

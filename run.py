@@ -34,7 +34,7 @@ def check_if_token_in_blacklist(decrypted_token):
 api.add_resource(resources.InitialRegistration, '/api/v1/registration/initial')
 api.add_resource(resources.AddPersonalDetails, '/api/v1/registration/user/<userId>/personal-details')
 api.add_resource(resources.AddEmergencyContact, '/api/v1/registration/user/<userId>/emergency-contact-details', methods=['POST'])
-api.add_resource(resources.AddEmployementHistory, '/api/v1/registration/user/<userId>/employement-details', methods=['POST'])
+api.add_resource(resources.AddEmploymentHistory, '/api/v1/registration/user/<userId>/employment-details', methods=['POST'])
 api.add_resource(resources.AddGeneralQuestionAnswer, '/api/v1/registration/user/<userId>/general-question-answers', methods=['POST'])
 api.add_resource(resources.UpdateUserType, '/api/v1/registration/user/<userId>/update-user-type', methods=['PATCH'])
 api.add_resource(references.ReferenceRegistration, '/api/v1/registration/user/<userId>/references', methods=['POST'])
