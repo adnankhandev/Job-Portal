@@ -10,7 +10,7 @@ class PersonalDetails(me.Document):
     current_address = me.StringField()
     postcode = me.IntField()
     duration_of_stay_at_address = me.StringField()
-    profile_picture = me.ImageField()
+    profile_picture = me.FileField()
 
 class References(me.Document):
     name: me.StringField()

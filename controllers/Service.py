@@ -13,11 +13,13 @@ class Services(Resource):
     @jwt_required
     def post(self):
         parser.add_argument('service', help='This field cannot be blank', required=True)
-        parser.add_argument('questions', help='This field cannot be blank', action='append', location='json', required=True)
+        parser.add_argument('description')
+        parser.add_argument('questions')
         print(parser)
         data = parser.parse_args()
         new_test = rt.Services(
             service=data['service'],
+            description=data['description'],
             questions=data['questions']
         )
 
@@ -65,14 +67,15 @@ class Service(Resource):
     @jwt_required
     def put(self, serviceId):
         parser.add_argument('service', help='This field cannot be blank', required=True)
-        parser.add_argument('questions', help='This field cannot be blank', action='append', required=True)
+        parser.add_argument('questions')
+        parser.add_argument('description')
         print(parser)
         data = parser.parse_args()
         try:
             response = rt.Services.objects.get(id=serviceId)
             if not response:
                 return {'error': 'Service doesn\'t exist'}, 404
-            updated_service = response.update(service=data['service'], questions=data['questions'])
+            updated_service = response.update(service=data['service'], description=data['description'], questions=data['questions'])
             
             return {
                 'response': 'Service has been updated'

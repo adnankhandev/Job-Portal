@@ -54,19 +54,21 @@ class AddPersonalDetails(Resource):
                 return {'error': 'User doesn\'t exist'}, 404
             personalDetails = PersonalDetails(
                 duration_of_stay_at_address = data['duration_of_stay_at_address'],
-                profile_picture = data['profile_picture'],
                 postcode = data['postcode'],
                 current_address = data['current_address'],
                 home_number = data['home_number'],
                 gender = data['gender'],
                 nationality = data['nationality'],
                 date_of_birth = data['date_of_birth'],
-            ).save()
+            )
+
+            personalDetails.profile_picture.new_file()
+            personalDetails.save()
 
             currentUser.update(
                 personal_details = personalDetails,
                 profile_completness = profile_rating
-                )
+            )
             print(currentUser)
             return {
                 'message': '{}`s personal details have been added'.format(currentUser['username'])
@@ -388,7 +390,7 @@ class AvailableHoursInfo(Resource):
             updated_user = currentUser.update(
                 available_hours=literal_eval(data['available_hours']),
                 profile_completness = profile_rating
-                )
+            )
             return {
                 'message': 'user_type has been updated for {}'.format(currentUser['username'])
             }, 200
