@@ -12,7 +12,8 @@ parser = reqparse.RequestParser()
 class Jobs(Resource):
     @jwt_required
     def post(self):
-        parser.add_argument('title', help='This field cannot be blank', required=True)
+        parser.add_argument('job_title', help='This field cannot be blank', required=True)
+        parser.add_argument('customer_name', help='This field cannot be blank', required=True)
         parser.add_argument('job_description', help='This field cannot be blank', required=True)
         parser.add_argument('required_services', help='This field cannot be blank', action='append', required=True)
         parser.add_argument('start_date_to_apply', help='This field cannot be blank', required=True)
@@ -22,7 +23,8 @@ class Jobs(Resource):
         data = parser.parse_args()
         print(jobs)
         new_job = jobs.Jobs(
-            title=data['title'],
+            job_title=data['job_title'],
+            customer_name=data['customer_name'],
             job_description=data['job_description'],
             required_services=data['required_services'],
             start_date_to_apply=data['start_date_to_apply'],
@@ -71,7 +73,8 @@ class Job(Resource):
             
     @jwt_required
     def put(self, jobId):
-        parser.add_argument('title', help='This field cannot be blank', required=True)
+        parser.add_argument('job_title', help='This field cannot be blank', required=True)
+        parser.add_argument('customer_name', help='This field cannot be blank', required=True)
         parser.add_argument('job_description', help='This field cannot be blank', required=True)
         parser.add_argument('required_services', help='This field cannot be blank', action='append', required=True)
         parser.add_argument('start_date_to_apply', help='This field cannot be blank', required=True)
@@ -84,7 +87,9 @@ class Job(Resource):
             if not response:
                 return {'error': 'Job doesn\'t exist'}, 404
             updated_service = response.update(
-                title=data['title'],
+                job_title=data['job_title'],
+                required_services=data['required_services'],
+                customer_name=data['customer_name'],
                 job_description=data['job_description'],
                 start_date_to_apply=data['start_date_to_apply'],
                 last_date_to_apply=data['last_date_to_apply'],
