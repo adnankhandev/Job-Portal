@@ -37,7 +37,7 @@ class Jobs(Resource):
             print(new_job)
             new_job.save()
             return {
-                'message': 'Job with title {} has been created'.format(data['title'])
+                'message': 'Job with title {} has been created'.format(data['job_title'])
             }, 200
         except Exception as ex:
             print(ex)
