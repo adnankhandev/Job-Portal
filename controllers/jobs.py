@@ -6,6 +6,7 @@ from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required
 from models import Jobs as jobs
 import json
+from datetime import datetime
 
 parser = reqparse.RequestParser()
 
@@ -27,8 +28,8 @@ class Jobs(Resource):
             customer_name=data['customer_name'],
             job_description=data['job_description'],
             required_services=data['required_services'],
-            start_date_to_apply=data['start_date_to_apply'],
-            last_date_to_apply=data['last_date_to_apply'],
+            start_date_to_apply=datetime.strptime(data['start_date_to_apply'], "%a, %d %b %Y %H:%M:%S %Z"),
+            last_date_to_apply=datetime.strptime(data['last_date_to_apply'], "%a, %d %b %Y %H:%M:%S %Z"),
             pay=data['pay']
         )
 
