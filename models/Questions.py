@@ -5,6 +5,6 @@ class Questions(me.Document):
     meta = {'collection': 'questions'}
     
     multiple_choice = me.BooleanField()
-    general_questions = me.StringField()
+    question = me.StringField()
     options = me.ListField()
     answer = me.StringField()

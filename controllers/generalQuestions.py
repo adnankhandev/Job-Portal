@@ -12,20 +12,20 @@ parser = reqparse.RequestParser()
 class GeneralQuestions(Resource):
     @jwt_required
     def post(self):
-        parser.add_argument('general_questions', action='append', help='This field cannot be blank', required=True)
+        parser.add_argument('question', action='append', help='This field cannot be blank', required=True)
         parser.add_argument('multiple_choice', help='This field cannot be blank', required=True)
         parser.add_argument('options')
         parser.add_argument('answer', help='This field cannot be blank', required=True)
         data = parser.parse_args()
-        print(data['general_questions'])
+        print(data['question'])
         new_question = Questions(
-            general_questions=data['general_questions'],
+            question=data['question'],
         )
 
         try:
             new_question.save()
             return {
-                'message': 'General Questions has been created'
+                'message': 'Question has been created'
             }, 200
         except Exception as ex:
             print(ex)
@@ -75,14 +75,14 @@ class GeneralQuestion(Resource):
                     'response': 'No such object'
                 }, 404
             else:
-                parser.add_argument('general_questions', action='append', help='This field cannot be blank', required=True)
+                parser.add_argument('question', action='append', help='This field cannot be blank', required=True)
                 parser.add_argument('multiple_choice', help='This field cannot be blank', required=True)
                 parser.add_argument('options')
                 parser.add_argument('answer', help='This field cannot be blank', required=True)
                 # Incomplete
                 print(parser)
                 data = parser.parse_args()
-                additional_questions = response['general_questions'] + data['general_questions']
+                additional_questions = response['question'] + data['general_questions']
                 updated_object = response.update(general_questions = additional_questions)
                 print(updated_object)
                 return {
