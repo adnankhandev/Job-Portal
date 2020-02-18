@@ -20,6 +20,9 @@ class GeneralQuestions(Resource):
         print(data['question'])
         new_question = Questions(
             question=data['question'],
+            answer=data['answer'],
+            options=data['options'],
+            multiple_choice=data['multiple_choice']
         )
 
         try:
