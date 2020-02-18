@@ -1,6 +1,3 @@
-from utilities import (
-    min_length
-)
 from flask import jsonify, make_response
 from flask_restful import Resource, reqparse
 from models.Questions import Questions
@@ -13,8 +10,8 @@ class GeneralQuestions(Resource):
     @jwt_required
     def post(self):
         parser.add_argument('question', help='This field cannot be blank', required=True)
-        parser.add_argument('multiple_choice', help='This field cannot be blank', action='append', required=True)
-        parser.add_argument('options')
+        parser.add_argument('multiple_choice', help='This field cannot be blank', required=True)
+        parser.add_argument('options', action='append')
         parser.add_argument('answer', help='This field cannot be blank', required=True)
         data = parser.parse_args()
         print(data['question'])
@@ -80,7 +77,7 @@ class GeneralQuestion(Resource):
             else:
                 parser.add_argument('question', action='append', help='This field cannot be blank', required=True)
                 parser.add_argument('multiple_choice', help='This field cannot be blank', required=True)
-                parser.add_argument('options')
+                parser.add_argument('options', action='append')
                 parser.add_argument('answer', help='This field cannot be blank', required=True)
                 # Incomplete
                 print(parser)
@@ -89,10 +86,25 @@ class GeneralQuestion(Resource):
                 updated_object = response.update(general_questions = additional_questions)
                 print(updated_object)
                 return {
-                    'response': 'general questions updated'
+                    'response': 'Question updated'
                 }, 200
         except Exception as ex:
             print(ex)
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
+
+
+    @jwt_required
+    def delete(self, GeneralQuestionId):
+        try:
+            question = Questions.objects.get(id=GeneralQuestionId)
+            if not question:
+                return {'error': 'Question doesn\'t exist'}, 404
+            question = question.delete()
+            return { 'response': 'Question has been deleted'}, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 400

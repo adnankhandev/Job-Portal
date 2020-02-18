@@ -6,6 +6,8 @@ from flask import jsonify, make_response
 from flask_jwt_extended import jwt_required
 from models import Services as rt
 import json
+import pprint
+
 
 parser = reqparse.RequestParser()
 
@@ -65,17 +67,33 @@ class Service(Resource):
             return {'error': message}, 400
     
     @jwt_required
-    def put(self, serviceId):
-        parser.add_argument('service', help='This field cannot be blank', required=True)
-        parser.add_argument('questions')
+    def patch(self, serviceId):
+        parser.add_argument('service')
+        parser.add_argument('questions', action='append')
         parser.add_argument('description')
-        print(parser)
         data = parser.parse_args()
+        insert = []
+
+        if(not data["service"] or data["service"] is ""):
+            del data["service"]
+        if(not data["questions"] or data["questions"][0] is ""):
+            del data["questions"]
+        if(not data["description"] or data["description"] is ""):
+            del data["description"]
+
         try:
             response = rt.Services.objects.get(id=serviceId)
             if not response:
                 return {'error': 'Service doesn\'t exist'}, 404
-            updated_service = response.update(service=data['service'], description=data['description'], questions=data['questions'])
+            
+            for item in list(data):
+                if item is "service":
+                    response.update(service=data[item])
+                if item is "questions":
+                    response.update(questions=data[item] + response.questions)
+                if item is "description":
+                    response.update(description=data[item])
+
             
             return {
                 'response': 'Service has been updated'

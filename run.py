@@ -44,6 +44,9 @@ api.add_resource(resources.AvailableHoursInfo, '/api/v1/registration/user/<userI
 # Health check
 api.add_resource(resources.test, '/api/v1/test')
 
+#CMS Login
+api.add_resource(resources.CMSLogin, '/api/v1/login/cms')
+
 # Login
 api.add_resource(resources.UserLogin, '/api/v1/login')
 
@@ -56,11 +59,11 @@ api.add_resource(resources.TokenRefresh, '/api/v1/token/refresh')
 
 # Services
 api.add_resource(Service.Services, '/api/v1/service', methods=['GET', 'POST'])
-api.add_resource(Service.Service, '/api/v1/service/<serviceId>', methods=['GET', 'PUT', 'DELETE'])
+api.add_resource(Service.Service, '/api/v1/service/<serviceId>', methods=['GET', 'PATCH', 'DELETE'])
 
 # Add general questions
 api.add_resource(generalQuestions.GeneralQuestions, '/api/v1/general-questions', methods=['POST', 'GET'])
-api.add_resource(generalQuestions.GeneralQuestion, '/api/v1/general-question/<GeneralQuestionId>', methods=['PUT', 'GET'])
+api.add_resource(generalQuestions.GeneralQuestion, '/api/v1/general-question/<GeneralQuestionId>', methods=['PUT', 'GET', 'DELETE'])
 
 # Jobs
 api.add_resource(jobs.Jobs, '/api/v1/jobs', methods=['GET', 'POST'])

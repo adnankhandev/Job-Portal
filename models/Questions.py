@@ -6,5 +6,5 @@ class Questions(me.Document):
     
     multiple_choice = me.BooleanField()
     question = me.StringField()
-    options = me.ListField()
+    options = me.ListField(me.StringField())
     answer = me.StringField()

@@ -7,6 +7,7 @@ from models.Users import PersonalDetails
 from models.Users import EmergencyContact
 from models.Users import EmploymentHistory
 from models.Users import References
+from models.Users import CMS
 from models.RevokedTokens import RevokedTokens
 from models.Users import Users
 from models import Services
@@ -122,6 +123,30 @@ class InitialRegistration(Resource):
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
+
+class CMSLogin(Resource):
+    def post(self):
+        parser.add_argument('username', help='This field cannot be blank', required=True)
+        parser.add_argument('password', help='Please enter at least 6 characters', required=True)
+        data = parser.parse_args()
+
+        user = CMS.objects(username=data['username']).first()
+        if not user:
+            return {'error': 'User {} doesn\'t exist'.format(data['username'])}, 404
+        user = json.loads(user.to_json())
+
+        if bcrypt.checkpw(data['password'].encode('utf-8'), user["password"].encode('utf-8')):
+            access_token = create_access_token(identity = data['username'])
+            refresh_token = create_refresh_token(identity = data['username'])
+            return {
+                'message': 'Logged in as {}'.format(user["username"]),
+                'access_token': access_token,
+                'refresh_token': refresh_token
+            }, 200
+        else:
+            return {'error': 'Unauthorized'}, 401
+        
+        return data
 
 class UserLogin(Resource):
     def post(self):

@@ -2,6 +2,11 @@ import mongoengine as me
 import json
 from models import Services
 
+class CMS(me.Document):
+    meta = {'collection': 'cms'}
+    username = me.StringField(max_length=50, unique=True, nullable=False, required=True)
+    password = me.StringField(nullable=False, required=True)
+
 class PersonalDetails(me.Document):
     date_of_birth = me.DateField()
     nationality = me.StringField()
