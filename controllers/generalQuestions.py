@@ -9,15 +9,13 @@ from flask_jwt_extended import jwt_required
 
 parser = reqparse.RequestParser()
 
-# {
-#     "general_questions": ["what is your name", "how old are you"]
-# }
-
-
 class GeneralQuestions(Resource):
     @jwt_required
     def post(self):
         parser.add_argument('general_questions', action='append', help='This field cannot be blank', required=True)
+        parser.add_argument('multiple_choice', help='This field cannot be blank', required=True)
+        parser.add_argument('options')
+        parser.add_argument('answer', help='This field cannot be blank', required=True)
         data = parser.parse_args()
         print(data['general_questions'])
         new_question = Questions(
@@ -78,6 +76,10 @@ class GeneralQuestion(Resource):
                 }, 404
             else:
                 parser.add_argument('general_questions', action='append', help='This field cannot be blank', required=True)
+                parser.add_argument('multiple_choice', help='This field cannot be blank', required=True)
+                parser.add_argument('options')
+                parser.add_argument('answer', help='This field cannot be blank', required=True)
+                # Incomplete
                 print(parser)
                 data = parser.parse_args()
                 additional_questions = response['general_questions'] + data['general_questions']
