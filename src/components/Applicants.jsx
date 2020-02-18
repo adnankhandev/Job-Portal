@@ -1,41 +1,69 @@
 import React, { Component } from "react";
-import { Sidebar, Footer, Divider, Content, Header, Container } from 'rsuite';
+import { 
+    Sidebar, 
+    Footer, 
+    Divider, 
+    Content, 
+    Header, 
+    Container, 
+    Panel 
+} from 'rsuite';
 import { NavbarComponent, NavSideBarComponent } from "./common/NavBar";
-import { Datatable } from "./common/Datatable";
+import DataTable from "react-data-table-component";
+import RestUtilities from "../services/RestUtilities";
+import { LinearIndeterminate } from "./common/Loader";
+const REACT_APP_BASEURL = process.env.REACT_APP_BASEURL
 
 
 class Applicants extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            data: [],
+            pending: true,
+        }
+    }
+
+    componentDidMount() {
+
+        RestUtilities.get(`${REACT_APP_BASEURL}/users`)
+            .then(response => {
+                this.setState({data:response.content.response})
+                this.setState({pending: false})
+            })
+    }
+
     render() {
         const columns = [
             {
-                name: 'Id',
-                selector: 'id',
+                name: 'Title',
+                selector: 'title',
                 sortable: true,
                 maxWidth: "100px"
             },
             {
-                name: 'First Name',
-                selector: 'firstName',
+                name: 'Name',
+                selector: 'name',
                 sortable: true,
             },
             {
-                name: 'Last Name',
-                selector: 'lastName',
+                name: 'Email',
+                selector: 'email',
                 sortable: true,
             },
             {
-                name: 'City',
-                selector: 'city',
+                name: 'Mobile Number',
+                selector: 'mobile_number',
                 sortable: true,
             },
             {
-                name: 'Street',
-                selector: 'street',
+                name: 'Username',
+                selector: 'username',
                 sortable: true,
             },
             {
-                name: 'Company Name',
-                selector: 'companyName',
+                name: 'User Type',
+                selector: 'user_type',
                 sortable: true,
             },
         ];
@@ -47,10 +75,22 @@ class Applicants extends Component {
                 </Header>
                 <Container>
                     <Sidebar>
-                        <NavSideBarComponent activeKey={"2"} />
+                        <NavSideBarComponent/>
                     </Sidebar>
                     <Content>
-                        <Datatable title={"Applicants"} columns={columns} endpoint={"/users"} data={1}/>
+                        <Panel shaded>
+                            <DataTable
+                                title={"Applicants"}
+                                columns={columns}
+                                data={this.state.data}
+                                progressPending={this.state.pending}
+                                progressComponent={<LinearIndeterminate />}
+                                highlightOnHover
+                                pointerOnHover
+                                pagination
+                                striped
+                            />
+                        </Panel>
                     </Content>
                 </Container>
                 <Footer></Footer>

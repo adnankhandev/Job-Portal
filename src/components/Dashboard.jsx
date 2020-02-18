@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Divider, Content, Header, Container, Placeholder, Sidebar, Footer, Panel, Col } from 'rsuite';
 import {NavbarComponent, NavSideBarComponent} from "./common/NavBar";
 
-const { Paragraph, Graph, Grid } = Placeholder;
+const { Paragraph } = Placeholder;
 const panelStyle = { background: "transparent", margin: "10px" };
 const EmptyCard = props => (
   <Panel {...props} style={{...panelStyle }} shaded>

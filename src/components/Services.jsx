@@ -1,31 +1,96 @@
 import React, { Component } from "react";
-import { Sidebar, Footer, Divider, Content, Header, Container } from 'rsuite';
+import { 
+    Icon, 
+    Alert, 
+    Schema, 
+    Col, 
+    Sidebar, 
+    Footer, 
+    Divider, 
+    Content, 
+    Header, 
+    Container, 
+    FlexboxGrid, 
+    Button,
+    Panel,
+    Input
+} from 'rsuite';
 import { NavbarComponent, NavSideBarComponent } from "./common/NavBar";
-import { Datatable } from "./common/Datatable";
+import DataTable from "react-data-table-component";
+import RestUtilities from "../services/RestUtilities";
+import { CustomModal } from "../components/common/CustomModal";
+import { LinearIndeterminate } from "./common/Loader";
 
+const REACT_APP_BASEURL = process.env.REACT_APP_BASEURL
+const { StringType } = Schema.Types;
 
 class Services extends Component {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            data: [],
+            show: false,
+            pending: true,
+            FormValue: {},
+            FormError: {},
+        }
+
+        this.FormReference = React.createRef()
+    }
+
+    open = () => {
+        this.setState({ show: true });
+    }
+
+    close = () => {
+        this.setState({ show: false });
+    }
+
+    submit = () => {
+        const goahead = this.FormReference.current.check()
+
+        if (goahead) {
+            this.close()
+
+            RestUtilities.post(`${REACT_APP_BASEURL}/service`, this.state.FormValue)
+            .then(response => {
+                if (!response.is_error) {
+                    Alert.success(response.content.message.toString());
+                    setTimeout(function(){                         
+                        window.location.href = "/services";
+                    }, 500);
+                } else {
+                    Alert.error(response.error_content.error.toString());
+                }
+            })
+        }
+
+        this.setState({FormValue: {}})
+    }
+
+    FormValue = (FormValue) => {
+        this.setState({FormValue})
+    }
+
+    FormError = (FormError) => {
+        this.setState({FormError})
+    }
+
+    componentDidMount() {
+        RestUtilities.get(`${REACT_APP_BASEURL}/service`)
+        .then(response => {            
+            this.setState({data:response.content.response})
+            this.setState({pending: false})
+        })
+    }
+
     render() {
-        const columns = [
-            {
-                name: 'Id',
-                selector: 'id',
-                sortable: true,
-                maxWidth: "100px"
-            },
-            {
-                name: 'Service Name',
-                selector: 'service_name',
-                sortable: true,
-                maxWidth: "400px"
-            },
-            {
-                name: 'Description',
-                selector: 'description',
-                sortable: true,
-                wrap: true
-            }
-        ];
+        const serviceSchema = Schema.Model({
+            service: StringType().isRequired('Service name is required.'),
+            description: StringType().isRequired('Service description is required.'),
+        });
+
         return (
             <Container>
                 <Header>
@@ -34,10 +99,38 @@ class Services extends Component {
                 </Header>
                 <Container>
                     <Sidebar>
-                        <NavSideBarComponent activeKey={"3"} />
+                        <NavSideBarComponent/>
                     </Sidebar>
                     <Content>
-                        <Datatable title={"Services"} columns={columns} endpoint={"/service"} data={2}/>
+                        <Panel shaded>
+                            <Col>
+                                <FlexboxGrid>
+                                    <Button onClick={() => this.open()} appearance="primary">+ Add Service</Button>
+                                </FlexboxGrid>
+                                <CustomModal
+                                    title={"Services"}
+                                    show={this.state.show} 
+                                    close={this.close} 
+                                    submit={this.submit} 
+                                    FormValue={this.FormValue}
+                                    FormError={this.FormError}
+                                    model={serviceSchema}
+                                    columns={columns}
+                                    fref={this.FormReference}
+                                />
+                            </Col>
+                            <DataTable
+                                title={"Services"}
+                                columns={columns}
+                                data={this.state.data}
+                                progressPending={this.state.pending}
+                                progressComponent={<LinearIndeterminate />}
+                                highlightOnHover
+                                pointerOnHover
+                                pagination
+                                striped
+                            />
+                        </Panel>
                     </Content>
                 </Container>
                 <Footer></Footer>
@@ -46,5 +139,53 @@ class Services extends Component {
     }
 }
 
+
+
+const Edit = () => {
+    
+}
+
+const Delete = (id) => {
+    RestUtilities.delete(`${REACT_APP_BASEURL}/service/${id}`)
+    .then(response => {
+        if (!response.is_error) {
+            Alert.success(response.content.response.toString());
+            setTimeout(function(){                         
+                window.location.href = "/services";
+            }, 500);
+        } else {
+            Alert.error(response.error_content.error.toString());
+        }
+    })
+}
+
+const CustomAction = (props) => (
+    <Col>
+        <Button onClick={() => Edit(props.id)}><Icon icon="edit" size="lg"/></Button> 
+        <Button onClick={() => Delete(props.id)}><Icon icon="trash" size="lg"/></Button>
+    </Col>
+)
+
+const columns = [
+    {
+        name: 'Service Name',
+        selector: 'service',
+        sortable: true,
+        maxWidth: "400px",
+        accepter: Input,
+    },
+    {
+        name: 'Description',
+        selector: 'description',
+        sortable: true,
+        wrap: true,
+        accepter: Input,
+    },
+    {
+        name: "Actions",
+        maxWidth: "150px",
+        cell: row => <CustomAction id={row._id.$oid}/>,
+    }
+];
 
 export default Services;

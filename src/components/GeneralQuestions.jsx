@@ -3,39 +3,29 @@ import {
     Icon, Alert, Schema, Col, Sidebar,
     Footer, Divider, Content, Header,
     Container, FlexboxGrid, Button, Panel,
-    Input, InputNumber, DatePicker, CheckPicker
+    Input
 } from 'rsuite';
 import { NavbarComponent, NavSideBarComponent } from "./common/NavBar";
 import DataTable from "react-data-table-component";
 import RestUtilities from "../services/RestUtilities";
 import { CustomModal } from "../components/common/CustomModal";
 import { LinearIndeterminate } from "./common/Loader";
-import moment from "moment"
+import { BooleanType } from "schema-typed";
 
 const REACT_APP_BASEURL = process.env.REACT_APP_BASEURL
-const { NumberType, StringType, DateType } = Schema.Types;
+const { ArrayType, StringType } = Schema.Types;
 
-class Jobs extends Component {
+class GeneralQuestions extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            allservices: [],
             data: [],
             show: false,
             pending: true,
-            FormValue: {
-                job_title: '',
-                customer_name: '',
-                job_description: '',
-                required_services: [],
-                start_date_to_apply: Date(),
-                last_date_to_apply: Date(),
-                pay: '',
-            },
+            FormValue: {},
             FormError: {},
         }
-
         this.FormReference = React.createRef()
     }
 
@@ -52,21 +42,19 @@ class Jobs extends Component {
         const {FormValue} = this.state
 
         if (goahead) {
-            FormValue.start_date_to_apply = FormValue.start_date_to_apply.toUTCString()
-            FormValue.last_date_to_apply = FormValue.last_date_to_apply.toUTCString()
             this.close()
 
-            RestUtilities.post(`${REACT_APP_BASEURL}/jobs`, FormValue)
-                .then(response => {
-                    if (!response.is_error) {
-                        Alert.success(response.content.message.toString());
-                        setTimeout(function(){                         
-                            window.location.href = "/jobs";
-                        }, 500);
-                    } else {
-                        Alert.error(response.error_content.error.toString());
-                    }
-                })
+            RestUtilities.post(`${REACT_APP_BASEURL}/general-questions`, FormValue)
+            .then(response => {
+                if (!response.is_error) {
+                    Alert.success(response.content.message.toString());
+                    setTimeout(function(){                         
+                        window.location.href = "/general-questions";
+                    }, 500);
+                } else {
+                    Alert.error(response.error_content.error.toString());
+                }
+            })
         }
 
         this.setState({ FormValue: {} })
@@ -81,35 +69,25 @@ class Jobs extends Component {
     }
 
     componentDidMount() {
-        RestUtilities.get(`${REACT_APP_BASEURL}/jobs`)
+        RestUtilities.get(`${REACT_APP_BASEURL}/general-questions`)
         .then(response => {
             this.setState({ data: response.content.response })
             this.setState({ pending: false })
         })
-
-        RestUtilities.get(`${REACT_APP_BASEURL}/service`)
-        .then(response => {
-            let mappedServices = response.content.response.map((current) => {
-                return {label: current.service, value: current._id.$oid}
-            })
-            this.setState({ allservices: mappedServices })
-        })
     }
 
     render() {
-        let { allservices } = this.state
-
         const Edit = () => {
 
         }
         
         const Delete = (id) => {
-            RestUtilities.delete(`${REACT_APP_BASEURL}/jobs/${id}`)
+            RestUtilities.delete(`${REACT_APP_BASEURL}/general-question/${id}`)
                 .then(response => {
                     if (!response.is_error) {
                         Alert.success(response.content.response.toString());
                         setTimeout(function(){                         
-                            window.location.href = "/jobs";
+                            window.location.href = "/General-Questions";
                         }, 500);
                     } else {
                         Alert.error(response.error_content.error.toString());
@@ -125,63 +103,17 @@ class Jobs extends Component {
         )
         const columns = [
             {
-                name: 'Job Title',
-                selector: 'job_title',
+                name: 'Question',
+                selector: 'question',
                 sortable: true,
-                maxWidth: "100px",
                 accepter: Input,
                 table: true
             },
             {
-                name: 'Customer Name',
-                selector: 'customer_name',
+                name: 'Answer',
+                selector: 'answer',
                 sortable: true,
-                maxWidth: "300px",
                 accepter: Input,
-                table: true
-            },
-            {
-                name: 'Job Description',
-                selector: 'job_description',
-                sortable: true,
-                wrap: true,
-                accepter: Input,
-                table: true
-            },
-            {
-                name: 'Wages',
-                selector: 'pay',
-                sortable: true,
-                maxWidth: "100px",
-                accepter: InputNumber,
-                table: true
-            },
-            {
-                name: 'Required Services',
-                selector: 'required_services',
-                sortable: true,
-                accepter: CheckPicker,
-                data: allservices,
-                table: false
-            },
-            {
-                name: 'Apply from',
-                selector: 'start_date_to_apply',
-                sortable: true,
-                maxWidth: "200px",
-                accepter: DatePicker,
-                placement: "topStart",
-                format: row => moment(row.$date).format('ll'),
-                table: true
-            },
-            {
-                name: 'Apply till',
-                selector: 'last_date_to_apply',
-                sortable: true,
-                maxWidth: "200px",
-                accepter: DatePicker,
-                placement: "topStart",
-                format: row => moment(row.$date).format('ll'),
                 table: true
             },
             {
@@ -192,18 +124,11 @@ class Jobs extends Component {
             }
         ];
 
-        const serviceSchema = Schema.Model({
-            job_title: StringType().isRequired('Job title is required.'),
-            customer_name: StringType().isRequired('Customer name is required.'),
-            job_description: StringType().isRequired('Job description is required.'),
-            start_date_to_apply: DateType().min(new Date(), 'Minimum date is today').isRequired('Start date is required'),
-            last_date_to_apply: DateType().addRule((value, data) => {
-                if (value <= data.start_date_to_apply) {
-                  return false;
-                }
-                return true;
-              }, 'Last date to apply must be after start date'),
-            pay: NumberType().isRequired("Wages are required"),
+        const questionSchema = Schema.Model({
+            question: StringType().isRequired('Question text is required'),
+            answer: StringType().isRequired('Answer text is required'),
+            options: ArrayType().of(StringType(), 'Options must be text'),
+            multiple_choice: BooleanType().isRequired('Is the question multiple choice or not?'),
         });
 
         const rowClick = (row) => {
@@ -224,22 +149,22 @@ class Jobs extends Component {
                         <Panel shaded>
                             <Col>
                                 <FlexboxGrid>
-                                    <Button onClick={() => this.open()} appearance="primary">+ Add Job</Button>
+                                    <Button onClick={() => this.open()} appearance="primary">+ Add Question</Button>
                                 </FlexboxGrid>
                                 <CustomModal
-                                    title={"Jobs"}
+                                    title={"Questions"}
                                     show={this.state.show}
                                     close={this.close}
                                     submit={this.submit}
                                     FormValue={this.FormValue}
                                     FormError={this.FormError}
-                                    model={serviceSchema}
+                                    model={questionSchema}
                                     columns={columns}
                                     fref={this.FormReference}
                                 />
                             </Col>
                             <DataTable
-                                title={"Jobs"}
+                                title={"General Questions"}
                                 columns={columns.filter((col) => {return col.table})    }
                                 data={this.state.data}
                                 progressPending={this.state.pending}
@@ -259,4 +184,4 @@ class Jobs extends Component {
     }
 }
 
-export default Jobs;
+export default GeneralQuestions;

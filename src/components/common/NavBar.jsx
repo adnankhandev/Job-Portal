@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Row, Col, Sidenav, Icon, Dropdown, Navbar, Nav} from "rsuite";
+import {Row, Col, Sidenav, Icon, Navbar, Nav} from "rsuite";
 import { Link } from 'react-router-dom';
 import AuthService from "../../services/Auth";
 
@@ -79,9 +79,14 @@ class NavSideBarComponent extends React.Component {
                   Jobs
                 </Nav.Item>
               </Link>
+              <Link to="/general-questions">
+                <Nav.Item eventKey="7" icon={<Icon icon="question-circle2" />}>
+                  General Questions
+                </Nav.Item>
+              </Link>
               <Link to="/tests">
                 <Nav.Item eventKey="5" icon={<Icon icon="book2" />}>
-                  Tests
+                  Service Tests
                 </Nav.Item>
               </Link>
               <Link to="/interviews">

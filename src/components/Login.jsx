@@ -1,12 +1,10 @@
 import React, { Component } from "react";
-import { Alert, Schema, Col, Placeholder, Nav, Icon, Dropdown, Navbar, Panel, Content, Form, FormGroup, Header, Container, FormControl, FlexboxGrid, ControlLabel, Button, ButtonToolbar, Footer } from 'rsuite';
+import { Alert, Schema, Panel, Content, Form, FormGroup, Header, Container, FormControl, FlexboxGrid, ControlLabel, Button, ButtonToolbar, Footer } from 'rsuite';
 import AuthService from './../services/Auth'
 import Auth from "../stores/Auth";
 import jwt_decode from "jwt-decode";
 import {NavbarComponent} from "./common/NavBar";
-const { StringType, NumberType } = Schema.Types;
-
-const { Paragraph, Graph, Grid } = Placeholder;
+const { StringType } = Schema.Types;
 
 class TextField extends React.PureComponent {
   render() {
@@ -34,19 +32,19 @@ class Login extends Component {
 
   render() {
     const auth = new AuthService();
-    const ServicesCard = props => (
-      <Panel {...props} style={{ ...contentStyle, background: "transparent" }} shaded>
-        <Col>
-          <Paragraph style={{ marginTop: 10 }} rows={10} columns={10} active />
-        </Col>
-      </Panel>
-    )
+    // const ServicesCard = props => (
+    //   <Panel {...props} style={{ ...contentStyle, background: "transparent" }} shaded>
+    //     <Col>
+    //       <Paragraph style={{ marginTop: 10 }} rows={10} columns={10} active />
+    //     </Col>
+    //   </Panel>
+    // )
 
     const model = Schema.Model({
       username: StringType().isRequired('This field is required.'),
       password: StringType().isRequired('This field is required.'),
     });
-    const { formError, formValue } = this.state;
+    const { formValue } = this.state;
 
     const signIn = () => {
       const { formValue } = this.state;

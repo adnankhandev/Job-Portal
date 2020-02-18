@@ -1,8 +1,7 @@
 import RestUtilities from './RestUtilities';
 import AuthStore from './../stores/Auth';
 
-const BASEURL = "https://job-portal-api1.herokuapp.com/api/v1"
-
+const REACT_APP_BASEURL = process.env.REACT_APP_BASEURL
 export default class Auth {
     static isSignedIn() {
         // alert(!!AuthStore.getToken())
@@ -10,7 +9,7 @@ export default class Auth {
     }
 
     signIn(data) {
-        return RestUtilities.post(`${BASEURL}/login`, data)
+        return RestUtilities.post(`${REACT_APP_BASEURL}/login/cms`, data)
             .then((response) => {
                 // debugger
                 if (!response.is_error) {
@@ -22,10 +21,8 @@ export default class Auth {
             });
     }
 
-
-
     register(data) {
-        return RestUtilities.post(`${BASEURL}/registration/initial`, data)
+        return RestUtilities.post(`${REACT_APP_BASEURL}/registration/initial`, data)
             .then((response) => {
                 debugger
                 if (!response.is_error) {

@@ -16,6 +16,13 @@ export default class RestUtilities {
         return RestUtilities.request("PUT", url, data);
     }
 
+    static patch(
+        url,
+        data
+    ) {
+        return RestUtilities.request("PATCH", url, data);
+    }
+
     static post(
         url,
         data
@@ -53,7 +60,7 @@ export default class RestUtilities {
                     headers: headers,
                 })
                 .then((response) => {
-                    if (response.status === 401) {
+                    if ((response.status === 401) || (response.status === 500)) {
                         AuthStore.removeToken();
                     }
                     let responseContentType = response.headers.get("content-type");
@@ -63,7 +70,7 @@ export default class RestUtilities {
                         return response.json();
                     }
                 }).then((responseContent) => {
-                    if (responseContent.status === 401) {
+                    if (responseContent.status === 401 || (responseContent.status === 500)) {
                         AuthStore.removeToken();
                     }
 
@@ -90,13 +97,11 @@ export default class RestUtilities {
                     body: JSON.stringify(data)
                 })
                 .then((response) => {
-                    if (response.status === 401) {
+                    if (response.status === 401 || (response.status === 500)) {
                         AuthStore.removeToken();
-
                     }
 
                     if (response.ok) {
-                        console.log("here as well: ", response)
                         return response.json().then((responseContent) => {
                             let response = {
                                 is_error: false,
