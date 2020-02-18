@@ -13,7 +13,7 @@ class GeneralQuestions(Resource):
     @jwt_required
     def post(self):
         parser.add_argument('question', help='This field cannot be blank', required=True)
-        parser.add_argument('multiple_choice', help='This field cannot be blank', required=True)
+        parser.add_argument('multiple_choice', help='This field cannot be blank', action='append', required=True)
         parser.add_argument('options')
         parser.add_argument('answer', help='This field cannot be blank', required=True)
         data = parser.parse_args()
