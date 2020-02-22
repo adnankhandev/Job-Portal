@@ -3,15 +3,21 @@ from utilities import (
 )
 from flask_restful import Resource, reqparse
 from models.Users import Users
+from models.Users import PersonalDetails
 from models.Users import EmergencyContact
-from models.Users import EmployementHistory
+from models.Users import EmploymentHistory
 from models.Users import References
+from models.Users import CMS
+from models.RevokedTokens import RevokedTokens
+from models.Users import Users
 from models import Services
 from ast import literal_eval
+from helpers.profileRating import UserHelper
 import json
 import bcrypt
 from flask import request
 from services import email
+from datetime import datetime
 from flask_jwt_extended import (
     create_access_token, 
     create_refresh_token, 
@@ -20,6 +26,8 @@ from flask_jwt_extended import (
     get_jwt_identity, 
     get_raw_jwt
 )
+
+
 
 parser = reqparse.RequestParser()
 
@@ -30,30 +38,48 @@ parser = reqparse.RequestParser()
 class AddPersonalDetails(Resource):
     @jwt_required
     def post(self, userId):
-        parser.add_argument('duration_of_stay_at_address')
-        parser.add_argument('profile_picture')
-        parser.add_argument('postcode')
-        parser.add_argument('current_address')
-        parser.add_argument('home_number')
-        parser.add_argument('gender')
-        parser.add_argument('nationality')
-        parser.add_argument('date_of_birth')
+        parser.add_argument('duration_of_stay_at_address', required=True)
+        parser.add_argument('profile_picture', required=True)
+        parser.add_argument('postcode', required=True)
+        parser.add_argument('current_address', required=True)
+        parser.add_argument('home_number', required=True)
+        parser.add_argument('gender', required=True)
+        parser.add_argument('nationality', required=True)
+        parser.add_argument('date_of_birth', required=True)
 
         data = parser.parse_args()
-        currentUser = Users.find_user_by_id(userId)
+        try:
+            currentUser = Users.objects(id=userId).first()
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            personalDetails = PersonalDetails(
+                duration_of_stay_at_address = data['duration_of_stay_at_address'],
+                postcode = data['postcode'],
+                current_address = data['current_address'],
+                home_number = data['home_number'],
+                gender = data['gender'],
+                nationality = data['nationality'],
+                date_of_birth = data['date_of_birth'],
+            )
 
-        currentUserDetails = Users.PersonalDetails(
-            duration_of_stay_at_address = data['duration_of_stay_at_address'],
-            profile_picture = data['profile_picture'],
-            postcode = data['postcode'],
-            current_address = data['current_address'],
-            home_number = data['home_number'],
-            gender = data['gender'],
-            nationality = data['nationality'],
-            date_of_birth = data['date_of_birth'],
-        )
+            personalDetails.profile_picture.new_file()
+            personalDetails.save()
 
-        currentUserDetails.save()
+            currentUser.update(
+                personal_details = personalDetails,
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating
+            )
+            print(currentUser)
+            return {
+                'message': '{}`s personal details have been added'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
 
     def update(self):
         parser.add_argument('duration_of_stay_at_address')
@@ -78,7 +104,7 @@ class InitialRegistration(Resource):
         parser.add_argument('name')
 
         data = parser.parse_args()
-
+        profile_rating = UserHelper.calulateUserRating()
         new_user = Users(
             username=data['username'],
             password=bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()),
@@ -86,6 +112,8 @@ class InitialRegistration(Resource):
             mobile_number=data['mobile_number'],            
             title=data['title'],
             name=data['name'],
+            profile_completness = 1,
+            profile_rating = profile_rating
         )
 
         try:
@@ -97,6 +125,30 @@ class InitialRegistration(Resource):
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
+
+class CMSLogin(Resource):
+    def post(self):
+        parser.add_argument('username', help='This field cannot be blank', required=True)
+        parser.add_argument('password', help='Please enter at least 6 characters', required=True)
+        data = parser.parse_args()
+
+        user = CMS.objects(username=data['username']).first()
+        if not user:
+            return {'error': 'User {} doesn\'t exist'.format(data['username'])}, 404
+        user = json.loads(user.to_json())
+
+        if bcrypt.checkpw(data['password'].encode('utf-8'), user["password"].encode('utf-8')):
+            access_token = create_access_token(identity = data['username'])
+            refresh_token = create_refresh_token(identity = data['username'])
+            return {
+                'message': 'Logged in as {}'.format(user["username"]),
+                'access_token': access_token,
+                'refresh_token': refresh_token
+            }, 200
+        else:
+            return {'error': 'Unauthorized'}, 401
+        
+        return data
 
 class UserLogin(Resource):
     def post(self):
@@ -127,7 +179,7 @@ class UserLogoutAccess(Resource):
     def post(self):
         jti = get_raw_jwt()['jti']
         try:
-            revoked_token = Users.RevokedTokens(jti = jti)
+            revoked_token = RevokedTokens(jti = jti)
             revoked_token.save()
             return {'message': 'Access token has been revoked'}, 200
         except:
@@ -138,7 +190,7 @@ class UserLogoutRefresh(Resource):
     def post(self):
         jti = get_raw_jwt()['jti']
         try:
-            revoked_token = Users.RevokedTokens(jti = jti)
+            revoked_token = RevokedTokens(jti = jti)
             revoked_token.save()
             return {'message': 'Refresh token has been revoked'}, 200
         except:
@@ -183,8 +235,12 @@ class AddEmergencyContact(Resource):
             )
 
             emergency_contact = emergencyContact.save()
-
-            updated_user = currentUser.update(emergency_contact_details = emergency_contact)
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
+            updated_user = currentUser.update(
+                emergency_contact_details = emergency_contact,
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating            
+            )
             print(updated_user)
             return {
                 'message': '{} emergency contact has been added'.format(currentUser['username'])
@@ -211,7 +267,12 @@ class AddServices(Resource):
             if not currentUser:
                 return {'error': 'User doesn\'t exist'}, 404
             services = Services.Services.objects(id__in=data['serviceIds'])
-            updated_user = currentUser.update(services = services)
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
+            updated_user = currentUser.update(
+                services = services,
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating
+            )
             print(updated_user)
             return {
                 'message': '{}`s services have been added'.format(currentUser['username'])
@@ -221,9 +282,9 @@ class AddServices(Resource):
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
-# /api/v1/registration/user/<userId>/employement-details
+# /api/v1/registration/user/<userId>/employment-details
 # {
-# 	"employement_history": [
+# 	"employment_history": [
 # 		{
 # 			"name": "employer1",
 # 			"service_hours": 4,
@@ -244,20 +305,20 @@ class AddServices(Resource):
 # 		}]
 # }
 
-class AddEmployementHistory(Resource):
+class AddEmploymentHistory(Resource):
     @jwt_required
     def post(self, userId):
-        parser.add_argument("employement_history", action="append", required=True)
+        parser.add_argument("employment_history", action="append", required=True)
         data = parser.parse_args()
-        length_of_employement_history = len(data['employement_history'])
-        employement_history = [0] * length_of_employement_history
+        length_of_employment_history = len(data['employment_history'])
+        employment_history = [0] * length_of_employment_history
         try:
             currentUser = Users.objects(id=userId).first()
             if not currentUser:
                 return {'error': 'User doesn\'t exist'}, 404
-            for i in range(length_of_employement_history):
-                current_record = eval(data['employement_history'][i])
-                employement_history[i] = EmployementHistory(
+            for i in range(length_of_employment_history):
+                current_record = eval(data['employment_history'][i])
+                employment_history[i] = EmploymentHistory(
                     name=current_record['name'],
                     service_hours=current_record['service_hours'],
                     salary_per_hour=current_record['salary_per_hour'],
@@ -266,11 +327,15 @@ class AddEmployementHistory(Resource):
                     reasons_of_leaving=current_record['reasons_of_leaving'],
                     notes=current_record['notes']
                 ).save()
-                print(employement_history[i])
-            print(currentUser)
-            updated_user = currentUser.update(employement_history=employement_history)
+            
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
+            updated_user = currentUser.update(
+                employment_history=employment_history,
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating
+            )
             return {
-                'message': '{} employement history has been added'.format(currentUser['username'])
+                'message': '{} employment history has been added'.format(currentUser['username'])
             }, 200
         except Exception as ex:
             print(ex)
@@ -293,7 +358,12 @@ class AddGeneralQuestionAnswer(Resource):
             print(currentUser)
             if not currentUser:
                 return {'error': 'User doesn\'t exist'}, 404
-            updated_user = currentUser.update(general_question_answers=data['general_question_answers'])
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
+            updated_user = currentUser.update(
+                general_question_answers=data['general_question_answers'],
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating
+                )
             return {
                 'message': 'general question answers has been added for {}'.format(currentUser['username'])
             }, 200
@@ -346,7 +416,13 @@ class AvailableHoursInfo(Resource):
             currentUser = Users.objects(id=userId).first()
             if not currentUser:
                 return {'error': 'User doesn\'t exist'}, 404
-            updated_user = currentUser.update(availible_hours=literal_eval(data['available_hours']))
+            updated_user = currentUser.update(available_hours=literal_eval(data['available_hours']))
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
+            updated_user = currentUser.update(
+                available_hours=literal_eval(data['available_hours']),
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating
+            )
             return {
                 'message': 'user_type has been updated for {}'.format(currentUser['username'])
             }, 200

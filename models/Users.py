@@ -2,15 +2,20 @@ import mongoengine as me
 import json
 from models import Services
 
+class CMS(me.Document):
+    meta = {'collection': 'cms'}
+    username = me.StringField(max_length=50, unique=True, nullable=False, required=True)
+    password = me.StringField(nullable=False, required=True)
+
 class PersonalDetails(me.Document):
     date_of_birth = me.DateField()
     nationality = me.StringField()
-    gender = me.StringField
+    gender = me.StringField()
     home_number = me.IntField()
     current_address = me.StringField()
     postcode = me.IntField()
     duration_of_stay_at_address = me.StringField()
-    profile_picture = me.ImageField()
+    profile_picture = me.FileField()
 
 class References(me.Document):
     name: me.StringField()
@@ -26,8 +31,8 @@ class EmergencyContact(me.Document):
     relation = me.StringField()
     contact_number = me.IntField()
 
-class EmployementHistory(me.Document):
-    meta = {'collection': 'employement_history'}
+class EmploymentHistory(me.Document):
+    meta = {'collection': 'employment_history'}
 
     name = me.StringField()
     service_hours= me.IntField()
@@ -55,9 +60,14 @@ class Users(me.Document):
     reference_details = me.ListField(me.ReferenceField('References', reverse_delete_rule=1))
     emergency_contact_details = me.ReferenceField('EmergencyContact', reverse_delete_rule=1)
     services = me.ListField(me.ReferenceField('Services'), reverse_delete_rule=1)
-    employement_history = me.ListField(me.ReferenceField('EmployementHistory'), reverse_delete_rule=1)
-    availible_hours = me.DictField()
+    employment_history = me.ListField(me.ReferenceField('EmploymentHistory'), reverse_delete_rule=1)
+    available_hours = me.DictField()
     general_question_answers = me.ListField()
+
+    profile_completness = me.FloatField() 
+    general_question_result = me.FloatField()
+    test_question_result = me.FloatField()
+    profile_rating = me.FloatField()
 
     @classmethod
     def find_user_by_username(cls, uname):
