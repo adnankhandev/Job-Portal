@@ -19,6 +19,7 @@ import { NavbarComponent, NavSideBarComponent } from "./common/NavBar";
 import DataTable from "react-data-table-component";
 import RestUtilities from "../services/RestUtilities";
 import { CustomModal } from "../components/common/CustomModal";
+import { ProfileModal } from "../components/common/ProfileModal";
 import { LinearIndeterminate } from "./common/Loader";
 
 const REACT_APP_BASEURL = process.env.REACT_APP_BASEURL
@@ -31,9 +32,11 @@ class Services extends Component {
         this.state = {
             data: [],
             show: false,
+            showProfile: false,
             pending: true,
             FormValue: {},
             FormError: {},
+            profileData: {}
         }
 
         this.FormReference = React.createRef()
@@ -43,8 +46,15 @@ class Services extends Component {
         this.setState({ show: true });
     }
 
+    openProfile = (row) => {
+        this.setState({ showProfile: true });
+        this.setState({ profileData: row });
+        console.log(row)
+    }
+
     close = () => {
         this.setState({ show: false });
+        this.setState({ showProfile: false });
     }
 
     submit = () => {
@@ -118,6 +128,13 @@ class Services extends Component {
                                     columns={columns}
                                     fref={this.FormReference}
                                 />
+                                <ProfileModal
+                                    title={"Services"}
+                                    show={this.state.showProfile} 
+                                    close={this.close} 
+                                    data={this.state.profileData}
+                                    columns={columns.filter((row) => {return row.profile})}
+                                />
                             </Col>
                             <DataTable
                                 title={"Services"}
@@ -125,6 +142,7 @@ class Services extends Component {
                                 data={this.state.data}
                                 progressPending={this.state.pending}
                                 progressComponent={<LinearIndeterminate />}
+                                onRowClicked={(row) => this.openProfile(row)}
                                 highlightOnHover
                                 pointerOnHover
                                 pagination
@@ -173,6 +191,8 @@ const columns = [
         sortable: true,
         maxWidth: "400px",
         accepter: Input,
+        type: "string",
+        profile: true
     },
     {
         name: 'Description',
@@ -180,6 +200,8 @@ const columns = [
         sortable: true,
         wrap: true,
         accepter: Input,
+        type: "array", 
+        profile: true
     },
     {
         name: "Actions",
