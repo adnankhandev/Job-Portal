@@ -1,5 +1,5 @@
 class UserHelper():
-    def calulateUserRating(user=None):
+    def calulateUserRating(user=None, increment = 0):
         if user is None:
             return 1
         else:
@@ -8,8 +8,5 @@ class UserHelper():
             test_question_result = user.test_question_result if user.test_question_result else 0
             print(profile_completness)
 
-            print(general_question_result)
-            print(test_question_result)
-            rating = (20*((profile_completness + 1) / 100) + 30*(general_question_result / 100) + 50*(test_question_result / 100))
-            print(rating)
+            rating = ((profile_completness + increment) * 0.2) +  (general_question_result * 0.3) + (test_question_result * 0.5)
             return rating

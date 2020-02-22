@@ -50,7 +50,7 @@ class AddPersonalDetails(Resource):
         data = parser.parse_args()
         try:
             currentUser = Users.objects(id=userId).first()
-            profile_rating = UserHelper.calulateUserRating(currentUser)
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
             if not currentUser:
                 return {'error': 'User doesn\'t exist'}, 404
             personalDetails = PersonalDetails(
@@ -68,7 +68,8 @@ class AddPersonalDetails(Resource):
 
             currentUser.update(
                 personal_details = personalDetails,
-                profile_completness = profile_rating
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating
             )
             print(currentUser)
             return {
@@ -111,7 +112,8 @@ class InitialRegistration(Resource):
             mobile_number=data['mobile_number'],            
             title=data['title'],
             name=data['name'],
-            profile_completness = profile_rating
+            profile_completness = 1,
+            profile_rating = profile_rating
         )
 
         try:
@@ -233,10 +235,11 @@ class AddEmergencyContact(Resource):
             )
 
             emergency_contact = emergencyContact.save()
-            profile_rating = UserHelper.calulateUserRating(currentUser)
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
             updated_user = currentUser.update(
                 emergency_contact_details = emergency_contact,
-                profile_completness = profile_rating
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating            
             )
             print(updated_user)
             return {
@@ -264,10 +267,11 @@ class AddServices(Resource):
             if not currentUser:
                 return {'error': 'User doesn\'t exist'}, 404
             services = Services.Services.objects(id__in=data['serviceIds'])
-            profile_rating = UserHelper.calulateUserRating(currentUser)
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
             updated_user = currentUser.update(
                 services = services,
-                profile_completness = profile_rating
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating
             )
             print(updated_user)
             return {
@@ -324,10 +328,11 @@ class AddEmploymentHistory(Resource):
                     notes=current_record['notes']
                 ).save()
             
-            profile_rating = UserHelper.calulateUserRating(currentUser)
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
             updated_user = currentUser.update(
-                employement_history=employement_history,
-                profile_completness = profile_rating
+                employment_history=employment_history,
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating
             )
             return {
                 'message': '{} employment history has been added'.format(currentUser['username'])
@@ -353,10 +358,11 @@ class AddGeneralQuestionAnswer(Resource):
             print(currentUser)
             if not currentUser:
                 return {'error': 'User doesn\'t exist'}, 404
-            profile_rating = UserHelper.calulateUserRating(currentUser)
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
             updated_user = currentUser.update(
                 general_question_answers=data['general_question_answers'],
-                profile_completness = profile_rating
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating
                 )
             return {
                 'message': 'general question answers has been added for {}'.format(currentUser['username'])
@@ -411,10 +417,11 @@ class AvailableHoursInfo(Resource):
             if not currentUser:
                 return {'error': 'User doesn\'t exist'}, 404
             updated_user = currentUser.update(available_hours=literal_eval(data['available_hours']))
-            profile_rating = UserHelper.calulateUserRating(currentUser)
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
             updated_user = currentUser.update(
                 available_hours=literal_eval(data['available_hours']),
-                profile_completness = profile_rating
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating
             )
             return {
                 'message': 'user_type has been updated for {}'.format(currentUser['username'])
