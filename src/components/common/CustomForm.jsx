@@ -6,10 +6,7 @@ export default class CustomForm extends Component {
     constructor(props){
         super(props)
         this.state = {
-            FormValue: {
-                service: '',
-                description: ''
-            }
+            FormValue: {}
         }
     }
 
@@ -19,7 +16,6 @@ export default class CustomForm extends Component {
         FIELDS = FIELDS.map(mappingFunction)
         return (
             <Form fluid
-                // ref={ref => (this.userform = ref)}
                 ref={this.props.fref}
                 onChange={FormValue => {
                     this.setState({FormValue})

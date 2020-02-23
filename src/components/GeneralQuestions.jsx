@@ -2,18 +2,20 @@ import React, { Component } from "react";
 import {
     Icon, Alert, Schema, Col, Sidebar,
     Footer, Divider, Content, Header,
-    Container, FlexboxGrid, Button, Panel,
-    Input
+    Container, FlexboxGrid, Button,
+    Input, Toggle, Modal, Form, Panel,
+    SelectPicker, List
 } from 'rsuite';
+import TextField from "./common/TextField";
 import { NavbarComponent, NavSideBarComponent } from "./common/NavBar";
 import DataTable from "react-data-table-component";
+import { ProfileModal } from "../components/common/ProfileModal";
 import RestUtilities from "../services/RestUtilities";
-import { CustomModal } from "../components/common/CustomModal";
 import { LinearIndeterminate } from "./common/Loader";
 import { BooleanType } from "schema-typed";
 
 const REACT_APP_BASEURL = process.env.REACT_APP_BASEURL
-const { ArrayType, StringType } = Schema.Types;
+const { StringType } = Schema.Types;
 
 class GeneralQuestions extends Component {
     constructor(props) {
@@ -21,9 +23,17 @@ class GeneralQuestions extends Component {
 
         this.state = {
             data: [],
+            options_data: [],
             show: false,
+            showProfile: false,
             pending: true,
-            FormValue: {},
+            FormValue: {
+                question: '',
+                answer: '',
+                multiple_choice: false,
+                options: []
+            },
+            profileData: {},
             FormError: {},
         }
         this.FormReference = React.createRef()
@@ -35,6 +45,7 @@ class GeneralQuestions extends Component {
 
     close = () => {
         this.setState({ show: false });
+        this.setState({ showProfile: false });
     }
 
     submit = () => {
@@ -61,6 +72,12 @@ class GeneralQuestions extends Component {
     }
 
     FormValue = (FormValue) => {
+        if(typeof(FormValue.options) === "string" && FormValue.options.length > 1) {
+            let options = FormValue.options 
+            FormValue.options = options.split(",").map(option => option.trim())
+            let options_data = options.split(",").map((option) => {return {label: option.trim(), value: option.trim()}})
+            this.setState({ options_data })
+        }
         this.setState({ FormValue })
     }
 
@@ -94,32 +111,45 @@ class GeneralQuestions extends Component {
                     }
                 })
         }
-        
+
         const CustomAction = (props) => (
             <Col>
                 <Button onClick={() => Edit(props.id)}><Icon icon="edit" size="lg" /></Button>
                 <Button onClick={() => Delete(props.id)}><Icon icon="trash" size="lg" /></Button>
             </Col>
         )
+
         const columns = [
             {
                 name: 'Question',
                 selector: 'question',
                 sortable: true,
-                accepter: Input,
-                table: true
+            },
+            {
+                name: "Options",
+                selector: 'options',
+                cell: row => 
+                (<div>
+                    <Panel>
+                        <List size='sm' hover>
+                            {row.options.map((item, index) =>
+                                <List.Item key={index} index={index}>
+                                    {item}
+                                </List.Item>
+                            )}
+                        </List>
+                    </Panel>
+                </div>)
             },
             {
                 name: 'Answer',
                 selector: 'answer',
                 sortable: true,
                 accepter: Input,
-                table: true
             },
             {
                 name: "Actions",
                 maxWidth: "150px",
-                table: true,
                 cell: row => <CustomAction id={row._id.$oid} />
             }
         ];
@@ -127,12 +157,12 @@ class GeneralQuestions extends Component {
         const questionSchema = Schema.Model({
             question: StringType().isRequired('Question text is required'),
             answer: StringType().isRequired('Answer text is required'),
-            options: ArrayType().of(StringType(), 'Options must be text'),
-            multiple_choice: BooleanType().isRequired('Is the question multiple choice or not?'),
+            multiple_choice: BooleanType(),
         });
 
         const rowClick = (row) => {
-            console.log(row)
+            this.setState({ showProfile: true });
+            this.setState({ profileData: row });
         }
 
         return (
@@ -151,21 +181,54 @@ class GeneralQuestions extends Component {
                                 <FlexboxGrid>
                                     <Button onClick={() => this.open()} appearance="primary">+ Add Question</Button>
                                 </FlexboxGrid>
-                                <CustomModal
-                                    title={"Questions"}
-                                    show={this.state.show}
-                                    close={this.close}
-                                    submit={this.submit}
-                                    FormValue={this.FormValue}
-                                    FormError={this.FormError}
-                                    model={questionSchema}
-                                    columns={columns}
-                                    fref={this.FormReference}
+                                <Modal show={this.state.show} onHide={this.close}>
+                                    <Modal.Header>
+                                        <Modal.Title>Add {this.state.title}</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>
+                                        <Form fluid
+                                            ref={this.FormReference}
+                                            onChange={FormValue => {
+                                                this.FormValue(FormValue)
+                                            }}
+                                            onCheck={FormError => {
+                                                this.FormError(FormError);
+                                            }}
+                                            formValue={this.state.FormValue}
+                                            model={questionSchema}
+                                        >
+                                            <TextField name={"question"} label={"Question"} accepter={Input}/>
+                                            <TextField name={"multiple_choice"} label={"Multiple Choice"} accepter={Toggle}/>
+                                            {
+                                                !this.state.FormValue.multiple_choice ? 
+                                                    <TextField name={"answer"} label={"Answer"} accepter={Input}/> 
+                                                    :
+                                                    <div>
+                                                        <TextField name={"options"} label={"Comma Separated Options"} accepter={Input}/>
+                                                        <TextField name={"answer"} label={"Answer"} data={this.state.options_data} accepter={SelectPicker}/>
+                                                    </div>
+                                            }
+                                        </Form>
+                                    </Modal.Body>
+                                    <Modal.Footer>
+                                        <Button onClick={() => this.submit() } appearance="primary">
+                                            Add
+                                        </Button>
+                                        <Button onClick={() => this.close() } appearance="subtle">
+                                            Cancel
+                                        </Button>
+                                    </Modal.Footer>
+                                </Modal>
+                                <ProfileModal
+                                    title={"General Questions"}
+                                    show={this.state.showProfile} 
+                                    close={this.close} 
+                                    data={this.state.profileData}
                                 />
                             </Col>
                             <DataTable
                                 title={"General Questions"}
-                                columns={columns.filter((col) => {return col.table})    }
+                                columns={columns}
                                 data={this.state.data}
                                 progressPending={this.state.pending}
                                 progressComponent={<LinearIndeterminate />}

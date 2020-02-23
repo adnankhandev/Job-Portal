@@ -1,19 +1,9 @@
 import React, { Component } from "react";
 import { 
-    Icon, 
-    Alert, 
-    Schema, 
-    Col, 
-    Sidebar, 
-    Footer, 
-    Divider, 
-    Content, 
-    Header, 
-    Container, 
-    FlexboxGrid, 
-    Button,
-    Panel,
-    Input
+    Icon, Alert, Schema, Col, Sidebar,
+    Footer, Divider, Content, Header, 
+    Container, FlexboxGrid, Button, 
+    Panel, Input
 } from 'rsuite';
 import { NavbarComponent, NavSideBarComponent } from "./common/NavBar";
 import DataTable from "react-data-table-component";
@@ -49,7 +39,6 @@ class Services extends Component {
     openProfile = (row) => {
         this.setState({ showProfile: true });
         this.setState({ profileData: row });
-        console.log(row)
     }
 
     close = () => {
@@ -133,7 +122,6 @@ class Services extends Component {
                                     show={this.state.showProfile} 
                                     close={this.close} 
                                     data={this.state.profileData}
-                                    columns={columns.filter((row) => {return row.profile})}
                                 />
                             </Col>
                             <DataTable
