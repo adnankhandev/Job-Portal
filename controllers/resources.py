@@ -50,7 +50,7 @@ class AddPersonalDetails(Resource):
         data = parser.parse_args()
         try:
             currentUser = Users.objects(id=userId).first()
-            profile_rating = UserHelper.calulateUserRating(currentUser)
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
             if not currentUser:
                 return {'error': 'User doesn\'t exist'}, 404
             personalDetails = PersonalDetails(
@@ -68,7 +68,8 @@ class AddPersonalDetails(Resource):
 
             currentUser.update(
                 personal_details = personalDetails,
-                profile_completness = profile_rating
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating
             )
             print(currentUser)
             return {
@@ -79,6 +80,41 @@ class AddPersonalDetails(Resource):
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
+
+    @jwt_required
+    def put(self, userId):
+        parser.add_argument('duration_of_stay_at_address', required=True)
+        parser.add_argument('profile_picture', required=True)
+        parser.add_argument('postcode', required=True)
+        parser.add_argument('current_address', required=True)
+        parser.add_argument('home_number', required=True)
+        parser.add_argument('gender', required=True)
+        parser.add_argument('nationality', required=True)
+        parser.add_argument('date_of_birth', required=True)
+
+        data = parser.parse_args()
+        try:
+            currentUser = Users.objects(id=userId).first()
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            currentUser.personal_details.update(
+                duration_of_stay_at_address = data['duration_of_stay_at_address'],
+                postcode = data['postcode'],
+                current_address = data['current_address'],
+                home_number = data['home_number'],
+                gender = data['gender'],
+                nationality = data['nationality'],
+                date_of_birth = data['date_of_birth'],
+            )
+            return {
+                'message': '{}`s personal details have been updated'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+
 
     def update(self):
         parser.add_argument('duration_of_stay_at_address')
@@ -111,7 +147,8 @@ class InitialRegistration(Resource):
             mobile_number=data['mobile_number'],            
             title=data['title'],
             name=data['name'],
-            profile_completness = profile_rating
+            profile_completness = 1,
+            profile_rating = profile_rating
         )
 
         try:
@@ -233,14 +270,41 @@ class AddEmergencyContact(Resource):
             )
 
             emergency_contact = emergencyContact.save()
-            profile_rating = UserHelper.calulateUserRating(currentUser)
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
             updated_user = currentUser.update(
                 emergency_contact_details = emergency_contact,
-                profile_completness = profile_rating
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating            
             )
             print(updated_user)
             return {
                 'message': '{} emergency contact has been added'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+
+    @jwt_required
+    def put(self, userId):
+        parser.add_argument("fullname", required=True)
+        parser.add_argument("contact_number", required=True)
+        parser.add_argument("relation", required=True)
+
+        data = parser.parse_args()
+        try: 
+            currentUser = Users.objects(id=userId).first()
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            print(currentUser)
+            currentUser.emergency_contact_details.update(
+                fullname = data['fullname'],
+                contact_number = data['contact_number'],
+                relation = data['relation']
+            )
+            return {
+                'message': '{} emergency contact has been updated'.format(currentUser['username'])
             }, 200
         except Exception as ex:
             print(ex)
@@ -264,10 +328,11 @@ class AddServices(Resource):
             if not currentUser:
                 return {'error': 'User doesn\'t exist'}, 404
             services = Services.Services.objects(id__in=data['serviceIds'])
-            profile_rating = UserHelper.calulateUserRating(currentUser)
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
             updated_user = currentUser.update(
                 services = services,
-                profile_completness = profile_rating
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating
             )
             print(updated_user)
             return {
@@ -324,10 +389,11 @@ class AddEmploymentHistory(Resource):
                     notes=current_record['notes']
                 ).save()
             
-            profile_rating = UserHelper.calulateUserRating(currentUser)
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
             updated_user = currentUser.update(
-                employement_history=employement_history,
-                profile_completness = profile_rating
+                employment_history=employment_history,
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating
             )
             return {
                 'message': '{} employment history has been added'.format(currentUser['username'])
@@ -353,10 +419,11 @@ class AddGeneralQuestionAnswer(Resource):
             print(currentUser)
             if not currentUser:
                 return {'error': 'User doesn\'t exist'}, 404
-            profile_rating = UserHelper.calulateUserRating(currentUser)
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
             updated_user = currentUser.update(
                 general_question_answers=data['general_question_answers'],
-                profile_completness = profile_rating
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating
                 )
             return {
                 'message': 'general question answers has been added for {}'.format(currentUser['username'])
@@ -411,10 +478,11 @@ class AvailableHoursInfo(Resource):
             if not currentUser:
                 return {'error': 'User doesn\'t exist'}, 404
             updated_user = currentUser.update(available_hours=literal_eval(data['available_hours']))
-            profile_rating = UserHelper.calulateUserRating(currentUser)
+            profile_rating = UserHelper.calulateUserRating(currentUser, 1)
             updated_user = currentUser.update(
                 available_hours=literal_eval(data['available_hours']),
-                profile_completness = profile_rating
+                profile_completness = currentUser.profile_completness + 1,
+                profile_rating = profile_rating
             )
             return {
                 'message': 'user_type has been updated for {}'.format(currentUser['username'])

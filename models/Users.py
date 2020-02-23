@@ -67,6 +67,7 @@ class Users(me.Document):
     profile_completness = me.FloatField() 
     general_question_result = me.FloatField()
     test_question_result = me.FloatField()
+    profile_rating = me.FloatField()
 
     @classmethod
     def find_user_by_username(cls, uname):
