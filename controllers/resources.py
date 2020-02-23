@@ -81,6 +81,41 @@ class AddPersonalDetails(Resource):
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
 
+    @jwt_required
+    def put(self, userId):
+        parser.add_argument('duration_of_stay_at_address', required=True)
+        parser.add_argument('profile_picture', required=True)
+        parser.add_argument('postcode', required=True)
+        parser.add_argument('current_address', required=True)
+        parser.add_argument('home_number', required=True)
+        parser.add_argument('gender', required=True)
+        parser.add_argument('nationality', required=True)
+        parser.add_argument('date_of_birth', required=True)
+
+        data = parser.parse_args()
+        try:
+            currentUser = Users.objects(id=userId).first()
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            currentUser.personal_details.update(
+                duration_of_stay_at_address = data['duration_of_stay_at_address'],
+                postcode = data['postcode'],
+                current_address = data['current_address'],
+                home_number = data['home_number'],
+                gender = data['gender'],
+                nationality = data['nationality'],
+                date_of_birth = data['date_of_birth'],
+            )
+            return {
+                'message': '{}`s personal details have been updated'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+
+
     def update(self):
         parser.add_argument('duration_of_stay_at_address')
         parser.add_argument('profile_picture')
@@ -244,6 +279,32 @@ class AddEmergencyContact(Resource):
             print(updated_user)
             return {
                 'message': '{} emergency contact has been added'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+
+    @jwt_required
+    def put(self, userId):
+        parser.add_argument("fullname", required=True)
+        parser.add_argument("contact_number", required=True)
+        parser.add_argument("relation", required=True)
+
+        data = parser.parse_args()
+        try: 
+            currentUser = Users.objects(id=userId).first()
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            print(currentUser)
+            currentUser.emergency_contact_details.update(
+                fullname = data['fullname'],
+                contact_number = data['contact_number'],
+                relation = data['relation']
+            )
+            return {
+                'message': '{} emergency contact has been updated'.format(currentUser['username'])
             }, 200
         except Exception as ex:
             print(ex)
