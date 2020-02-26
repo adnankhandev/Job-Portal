@@ -81,6 +81,7 @@ class AddPersonalDetails(Resource):
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
 
+class UpdatePersonalDetails(Resource):
     @jwt_required
     def put(self, userId):
         parser.add_argument('duration_of_stay_at_address', required=True)
@@ -286,6 +287,7 @@ class AddEmergencyContact(Resource):
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
 
+class UpdateEmergencyContact(Resource):
     @jwt_required
     def put(self, userId):
         parser.add_argument("fullname", required=True)
@@ -344,6 +346,7 @@ class AddServices(Resource):
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
 
+class UpdateServices(Resource):
     @jwt_required
     def put(self, userId):
         parser.add_argument("serviceIds", action="append")
@@ -428,6 +431,7 @@ class AddEmploymentHistory(Resource):
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
 
+class UpdateEmploymentHistory(Resource):
     @jwt_required
     def put(self, userId):
         parser.add_argument("employment_history", action="append", required=True)
@@ -527,7 +531,7 @@ class UpdateUserType(Resource):
 # 	}
 # }
 
-class AvailableHoursInfo(Resource):
+class AddAvailableHoursInfo(Resource):
     @jwt_required
     def post(self, userId):
         parser.add_argument("available_hours", required=True)
@@ -551,6 +555,7 @@ class AvailableHoursInfo(Resource):
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
 
+class UpdateAvailableHoursInfo(Resource):
     @jwt_required
     def put(self, userId):
         parser.add_argument("available_hours", required=True)
@@ -563,7 +568,7 @@ class AvailableHoursInfo(Resource):
                 available_hours=literal_eval(data['available_hours']),
             )
             return {
-                'message': 'user_type has been updated for {}'.format(currentUser['username'])
+                'message': 'Available hours has been updated for {}'.format(currentUser['username'])
             }, 200
         except Exception as ex:
             print(ex)
