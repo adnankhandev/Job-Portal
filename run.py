@@ -77,6 +77,8 @@ api.add_resource(references.SaveReferenceAnswers, '/api/v1/references/<reference
 # User
 api.add_resource(users.users, '/api/v1/users', methods=['GET'])
 api.add_resource(users.user, '/api/v1/users/<userId>', methods=['GET'])
+api.add_resource(references.Reference, '/api/v1/users/<userId>/reference/<referenceId>', methods=['PUT'])
+
 
 
 

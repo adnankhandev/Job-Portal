@@ -13,6 +13,43 @@ from flask_jwt_extended import jwt_required
 
 parser = reqparse.RequestParser()
 
+# /api/v1/registration/user/<userId>/reference/<referenceId>
+# {
+#           "name": "testname",
+#           "contact_number": "03333333333",
+#           "address": "ajdrhkewhfk", 
+# 		    "email": "14besemfatima@seecs.edu.pk",
+# }
+class Reference(Resource):
+    # @jwt_required
+    def put(self, userId, referenceId):
+        parser.add_argument('name', required=True)
+        parser.add_argument('email', help='This field cannot be blank', required=True)
+        parser.add_argument('contact_number', help='This field cannot be blank', required=True)
+        parser.add_argument('address', help='This field cannot be blank', required=True)
+        print(parser)
+        data = parser.parse_args()
+        result = {}
+        try:
+            reference = References.objects.get(id=referenceId)
+            if not reference:
+                return {'error': 'Reference doesn\'t exist'}, 404
+            updated_reference = reference.update(
+                name=data['name'],
+                email=data['email'],
+                contact_number=data['email'],
+                address=data['address']
+            )
+            
+            return {
+                'response': 'Reference has been updated'
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 400
+
 # /api/v1/registration/user/<userId>/references/
 # {
 # 	"references": [
@@ -64,8 +101,12 @@ class ReferenceRegistration (Resource):
                 current_obj = data['references'][i]
                 reference_info = eval(current_obj)
                 print(reference_info)
-                reference_details[i] = References(email=reference_info['email'] ).save()
-                ## send an email to this user
+                reference_details[i] = References(
+                    name=reference_info['name'],
+                    contact_number=reference_info['contact_number'],
+                    address=reference_info['address'],
+                    email=reference_info['email']
+                    ).save()                ## send an email to this user
                 url = 'jobportal.com/referenceStuff/{}'.format(reference_details[i].id)
                 email.sendReferenceEmail.sendEmail(reference_info['email'], url)
             print(user)
