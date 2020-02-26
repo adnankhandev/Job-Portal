@@ -48,6 +48,11 @@ class GeneralQuestions extends Component {
         this.setState({ showProfile: false });
     }
 
+    rowClick = (row) => {
+        this.setState({ showProfile: true });
+        this.setState({ profileData: row });
+    }
+
     submit = () => {
         const goahead = this.FormReference.current.check()
         const {FormValue} = this.state
@@ -160,11 +165,6 @@ class GeneralQuestions extends Component {
             multiple_choice: BooleanType(),
         });
 
-        const rowClick = (row) => {
-            this.setState({ showProfile: true });
-            this.setState({ profileData: row });
-        }
-
         return (
             <Container>
                 <Header>
@@ -236,7 +236,7 @@ class GeneralQuestions extends Component {
                                 pointerOnHover
                                 pagination
                                 striped
-                                onRowClicked={(row) => rowClick(row)}
+                                onRowClicked={(row) => this.rowClick(row)}
                             />
                         </Panel>
                     </Content>

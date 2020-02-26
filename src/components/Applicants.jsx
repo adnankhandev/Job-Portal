@@ -12,8 +12,8 @@ import { NavbarComponent, NavSideBarComponent } from "./common/NavBar";
 import DataTable from "react-data-table-component";
 import RestUtilities from "../services/RestUtilities";
 import { LinearIndeterminate } from "./common/Loader";
+import {ProfileModal} from "./common/ProfileModal";
 const REACT_APP_BASEURL = process.env.REACT_APP_BASEURL
-
 
 class Applicants extends Component {
     constructor(props) {
@@ -21,6 +21,8 @@ class Applicants extends Component {
         this.state = {
             data: [],
             pending: true,
+            showProfile: false,
+            profileData: {}
         }
     }
 
@@ -31,6 +33,15 @@ class Applicants extends Component {
                 this.setState({data:response.content.response})
                 this.setState({pending: false})
             })
+    }
+
+    close = () => {
+        this.setState({ showProfile: false });
+    }
+
+    rowClick = (row) => {
+        this.setState({ showProfile: true });
+        this.setState({ profileData: row });
     }
 
     render() {
@@ -85,10 +96,17 @@ class Applicants extends Component {
                                 data={this.state.data}
                                 progressPending={this.state.pending}
                                 progressComponent={<LinearIndeterminate />}
+                                onRowClicked={(row) => this.rowClick(row)}
                                 highlightOnHover
                                 pointerOnHover
                                 pagination
                                 striped
+                            />
+                            <ProfileModal
+                                title={"Applicant"}
+                                show={this.state.showProfile} 
+                                close={this.close} 
+                                data={this.state.profileData}
                             />
                         </Panel>
                     </Content>

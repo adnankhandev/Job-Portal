@@ -36,14 +36,14 @@ class Services extends Component {
         this.setState({ show: true });
     }
 
-    openProfile = (row) => {
-        this.setState({ showProfile: true });
-        this.setState({ profileData: row });
-    }
-
     close = () => {
         this.setState({ show: false });
         this.setState({ showProfile: false });
+    }
+
+    rowClick = (row) => {
+        this.setState({ showProfile: true });
+        this.setState({ profileData: row });
     }
 
     submit = () => {
@@ -130,7 +130,7 @@ class Services extends Component {
                                 data={this.state.data}
                                 progressPending={this.state.pending}
                                 progressComponent={<LinearIndeterminate />}
-                                onRowClicked={(row) => this.openProfile(row)}
+                                onRowClicked={(row) => this.rowClick(row)}
                                 highlightOnHover
                                 pointerOnHover
                                 pagination
