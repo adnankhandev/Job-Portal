@@ -18,8 +18,8 @@ class PersonalDetails(me.Document):
     profile_picture = me.FileField()
 
 class References(me.Document):
-    name: me.StringField()
-    contact_number: me.StringField()
+    name = me.StringField()
+    contact_number = me.StringField()
     email = me.StringField()
     results = me.ListField(me.StringField())
     address = me.StringField()
