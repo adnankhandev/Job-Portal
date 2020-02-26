@@ -60,7 +60,7 @@ class Users(me.Document):
     reference_details = me.ListField(me.ReferenceField('References', reverse_delete_rule=1))
     emergency_contact_details = me.ReferenceField('EmergencyContact', reverse_delete_rule=1)
     services = me.ListField(me.ReferenceField('Services'), reverse_delete_rule=1)
-    employment_history = me.ListField(me.ReferenceField('EmploymentHistory'), reverse_delete_rule=1)
+    employment_history = me.ListField(me.DictField())
     available_hours = me.DictField()
     general_question_answers = me.ListField()
 

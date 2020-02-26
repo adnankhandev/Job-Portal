@@ -81,6 +81,7 @@ class AddPersonalDetails(Resource):
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
 
+class UpdatePersonalDetails(Resource):
     @jwt_required
     def put(self, userId):
         parser.add_argument('duration_of_stay_at_address', required=True)
@@ -286,6 +287,7 @@ class AddEmergencyContact(Resource):
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
 
+class UpdateEmergencyContact(Resource):
     @jwt_required
     def put(self, userId):
         parser.add_argument("fullname", required=True)
@@ -343,6 +345,30 @@ class AddServices(Resource):
             template = "{0}:{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
+
+class UpdateServices(Resource):
+    @jwt_required
+    def put(self, userId):
+        parser.add_argument("serviceIds", action="append")
+        data = parser.parse_args()
+
+        try:
+            currentUser = Users.objects(id=userId).first()
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            services = Services.Services.objects(id__in=data['serviceIds'])
+            updated_user = currentUser.update(
+                services = services
+            )
+            print(updated_user)
+            return {
+                'message': '{}`s services have been updated'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
 # /api/v1/registration/user/<userId>/employment-details
 # {
 # 	"employment_history": [
@@ -379,15 +405,16 @@ class AddEmploymentHistory(Resource):
                 return {'error': 'User doesn\'t exist'}, 404
             for i in range(length_of_employment_history):
                 current_record = eval(data['employment_history'][i])
-                employment_history[i] = EmploymentHistory(
-                    name=current_record['name'],
-                    service_hours=current_record['service_hours'],
-                    salary_per_hour=current_record['salary_per_hour'],
-                    starting_date=current_record['starting_date'],
-                    end_date=current_record['end_date'],
-                    reasons_of_leaving=current_record['reasons_of_leaving'],
-                    notes=current_record['notes']
-                ).save()
+
+                employment_history[i] = {
+                    "name":current_record['name'],
+                    "service_hours":current_record['service_hours'],
+                    "salary_per_hour":current_record['salary_per_hour'],
+                    "starting_date":current_record['starting_date'],
+                    "end_date":current_record['end_date'],
+                    "reasons_of_leaving":current_record['reasons_of_leaving'],
+                    "notes":current_record['notes']
+                }
             
             profile_rating = UserHelper.calulateUserRating(currentUser, 1)
             updated_user = currentUser.update(
@@ -397,6 +424,42 @@ class AddEmploymentHistory(Resource):
             )
             return {
                 'message': '{} employment history has been added'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+
+class UpdateEmploymentHistory(Resource):
+    @jwt_required
+    def put(self, userId):
+        parser.add_argument("employment_history", action="append", required=True)
+        data = parser.parse_args()
+        length_of_employment_history = len(data['employment_history'])
+        employment_history = [0] * length_of_employment_history
+        try:
+            currentUser = Users.objects(id=userId).first()
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            for i in range(length_of_employment_history):
+                current_record = eval(data['employment_history'][i])
+
+                employment_history[i] = {
+                    "name":current_record['name'],
+                    "service_hours":current_record['service_hours'],
+                    "salary_per_hour":current_record['salary_per_hour'],
+                    "starting_date":current_record['starting_date'],
+                    "end_date":current_record['end_date'],
+                    "reasons_of_leaving":current_record['reasons_of_leaving'],
+                    "notes":current_record['notes']
+                }
+            
+            updated_user = currentUser.update(
+                employment_history=employment_history
+            )
+            return {
+                'message': '{} employment history has been updated'.format(currentUser['username'])
             }, 200
         except Exception as ex:
             print(ex)
@@ -468,7 +531,7 @@ class UpdateUserType(Resource):
 # 	}
 # }
 
-class AvailableHoursInfo(Resource):
+class AddAvailableHoursInfo(Resource):
     @jwt_required
     def post(self, userId):
         parser.add_argument("available_hours", required=True)
@@ -477,7 +540,6 @@ class AvailableHoursInfo(Resource):
             currentUser = Users.objects(id=userId).first()
             if not currentUser:
                 return {'error': 'User doesn\'t exist'}, 404
-            updated_user = currentUser.update(available_hours=literal_eval(data['available_hours']))
             profile_rating = UserHelper.calulateUserRating(currentUser, 1)
             updated_user = currentUser.update(
                 available_hours=literal_eval(data['available_hours']),
@@ -486,6 +548,27 @@ class AvailableHoursInfo(Resource):
             )
             return {
                 'message': 'user_type has been updated for {}'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+
+class UpdateAvailableHoursInfo(Resource):
+    @jwt_required
+    def put(self, userId):
+        parser.add_argument("available_hours", required=True)
+        data = parser.parse_args()
+        try:
+            currentUser = Users.objects(id=userId).first()
+            if not currentUser:
+                return {'error': 'User doesn\'t exist'}, 404
+            updated_user = currentUser.update(
+                available_hours=literal_eval(data['available_hours']),
+            )
+            return {
+                'message': 'Available hours has been updated for {}'.format(currentUser['username'])
             }, 200
         except Exception as ex:
             print(ex)

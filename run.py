@@ -32,14 +32,14 @@ def check_if_token_in_blacklist(decrypted_token):
 
 # Registering endpoints
 api.add_resource(resources.InitialRegistration, '/api/v1/registration/initial')
-api.add_resource(resources.AddPersonalDetails, '/api/v1/registration/user/<userId>/personal-details', methods=['POST', 'PUT'])
-api.add_resource(resources.AddEmergencyContact, '/api/v1/registration/user/<userId>/emergency-contact-details', methods=['POST', 'PUT'])
+api.add_resource(resources.AddPersonalDetails, '/api/v1/registration/user/<userId>/personal-details', methods=['POST'])
+api.add_resource(resources.AddEmergencyContact, '/api/v1/registration/user/<userId>/emergency-contact-details', methods=['POST'])
 api.add_resource(resources.AddEmploymentHistory, '/api/v1/registration/user/<userId>/employment-details', methods=['POST'])
 api.add_resource(resources.AddGeneralQuestionAnswer, '/api/v1/registration/user/<userId>/general-question-answers', methods=['POST'])
 api.add_resource(resources.UpdateUserType, '/api/v1/registration/user/<userId>/update-user-type', methods=['PATCH'])
 api.add_resource(references.ReferenceRegistration, '/api/v1/registration/user/<userId>/references', methods=['POST'])
 api.add_resource(resources.AddServices, '/api/v1/registration/user/<userId>/services', methods=['POST'])
-api.add_resource(resources.AvailableHoursInfo, '/api/v1/registration/user/<userId>/available-hours', methods=['POST'])
+api.add_resource(resources.AddAvailableHoursInfo, '/api/v1/registration/user/<userId>/available-hours', methods=['POST'])
 
 # Health check
 api.add_resource(resources.test, '/api/v1/test')
@@ -78,6 +78,12 @@ api.add_resource(references.SaveReferenceAnswers, '/api/v1/references/<reference
 api.add_resource(users.users, '/api/v1/users', methods=['GET'])
 api.add_resource(users.user, '/api/v1/users/<userId>', methods=['GET'])
 api.add_resource(references.Reference, '/api/v1/users/<userId>/reference/<referenceId>', methods=['PUT'])
+api.add_resource(resources.UpdateServices, '/api/v1/users/<userId>/services', methods=['PUT'])
+api.add_resource(resources.UpdateEmploymentHistory, '/api/v1/users/<userId>/employment-details', methods=['PUT'])
+api.add_resource(resources.UpdateAvailableHoursInfo, '/api/v1/users/<userId>/available-hours', methods=['PUT'])
+api.add_resource(resources.UpdateEmergencyContact, '/api/v1/users/<userId>/emergency-contact-details', methods=['PUT'])
+api.add_resource(resources.UpdatePersonalDetails, '/api/v1/users/<userId>/personal-details', methods=['PUT'])
+
 
 
 
