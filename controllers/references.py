@@ -21,7 +21,7 @@ parser = reqparse.RequestParser()
 # 		    "email": "14besemfatima@seecs.edu.pk",
 # }
 class Reference(Resource):
-    # @jwt_required
+    @jwt_required
     def put(self, userId, referenceId):
         parser.add_argument('name', required=True)
         parser.add_argument('email', help='This field cannot be blank', required=True)
@@ -40,7 +40,6 @@ class Reference(Resource):
                 contact_number=data['email'],
                 address=data['address']
             )
-            
             return {
                 'response': 'Reference has been updated'
             }, 200
@@ -106,7 +105,8 @@ class ReferenceRegistration (Resource):
                     contact_number=reference_info['contact_number'],
                     address=reference_info['address'],
                     email=reference_info['email']
-                    ).save()                ## send an email to this user
+                    ).save()                
+                ## send an email to this user
                 url = 'jobportal.com/referenceStuff/{}'.format(reference_details[i].id)
                 email.sendReferenceEmail.sendEmail(reference_info['email'], url)
             print(user)
