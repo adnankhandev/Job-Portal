@@ -84,8 +84,11 @@ api.add_resource(resources.UpdateAvailableHoursInfo, '/api/v1/users/<userId>/ava
 api.add_resource(resources.UpdateEmergencyContact, '/api/v1/users/<userId>/emergency-contact-details', methods=['PUT'])
 api.add_resource(resources.UpdatePersonalDetails, '/api/v1/users/<userId>/personal-details', methods=['PUT'])
 
+# Emergency Contact Details
+api.add_resource(resources.GetEmergencyContact, '/api/v1/emergency-contact-details/<id>', methods=['GET'])
 
-
+# Employment Details
+api.add_resource(resources.GetEmploymentHistory, '/api/v1/employment-history/<id>', methods=['GET'])
 
 
 #Registering database

@@ -314,6 +314,25 @@ class UpdateEmergencyContact(Resource):
             message = template.format(type(ex).__name__, ex.args)
             return {'error': message}, 500
 
+
+class GetEmergencyContact(Resource):
+    @jwt_required
+    def get(self, id):
+        try:
+            emergency_contacts = EmergencyContact.objects(id = id)
+            if not emergency_contacts:
+                return {'error': 'Emergency contacts don\'t exist'}, 404
+            print(emergency_contacts)
+            
+            return {
+                'response': json.loads(emergency_contacts.to_json())
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+
 # /api/v1/registration/user/<userId>/services
 # {
 # serviceIds: ['objectIds of service1', 'objectId of service 2]
@@ -460,6 +479,24 @@ class UpdateEmploymentHistory(Resource):
             )
             return {
                 'message': '{} employment history has been updated'.format(currentUser['username'])
+            }, 200
+        except Exception as ex:
+            print(ex)
+            template = "{0}:{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            return {'error': message}, 500
+
+
+class GetEmploymentHistory(Resource):
+    @jwt_required
+    def get(self, id):
+        try:
+            employment_history = EmploymentHistory.objects(id = id)
+            if not employment_history:
+                return {'error': 'Employment history doesn\'t exist'}, 404
+            
+            return {
+                'response': json.loads(employment_history.to_json())
             }, 200
         except Exception as ex:
             print(ex)
