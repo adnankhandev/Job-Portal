@@ -21,13 +21,10 @@ class Applicants extends Component {
         this.state = {
             data: [],
             pending: true,
-            showProfile: false,
-            profileData: {}
         }
     }
 
     componentDidMount() {
-
         RestUtilities.get(`${REACT_APP_BASEURL}/users`)
             .then(response => {
                 this.setState({data:response.content.response})
@@ -101,12 +98,6 @@ class Applicants extends Component {
                                 pointerOnHover
                                 pagination
                                 striped
-                            />
-                            <ProfileModal
-                                title={"Applicant"}
-                                show={this.state.showProfile} 
-                                close={this.close} 
-                                data={this.state.profileData}
                             />
                         </Panel>
                     </Content>
