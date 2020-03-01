@@ -8,6 +8,7 @@ import Jobs from './components/Jobs';
 import GeneralQuestions from './components/GeneralQuestions';
 import Tests from './components/Test';
 
+import { ApplicantsProfile } from "./components/common/ApplicantsProfile";
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import AuthService from '../src/services/Auth';
 import "rsuite/dist/styles/rsuite-default.css";
@@ -22,6 +23,7 @@ class App extends Component {
             <PrivateRoute exact path={`/`} component={Dashboard} />
             <PrivateRoute exact path={`/services`} component={Services} />
             <PrivateRoute exact path={`/applicants`} component={Applicants} />
+            <PrivateRoute path="/applicants/applicant" component={ApplicantsProfile} />
             <PrivateRoute exact path={`/jobs`} component={Jobs} />
             <PrivateRoute exact path={`/general-questions`} component={GeneralQuestions} />
             <PrivateRoute exact path={`/tests`} component={Tests} />
@@ -52,7 +54,6 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
     }
   />
 );
-
 
 const DefaultRoute = ({ component: Component, ...rest }) => (
   <Route

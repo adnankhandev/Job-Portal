@@ -12,7 +12,6 @@ import { NavbarComponent, NavSideBarComponent } from "./common/NavBar";
 import DataTable from "react-data-table-component";
 import RestUtilities from "../services/RestUtilities";
 import { LinearIndeterminate } from "./common/Loader";
-import {ProfileModal} from "./common/ProfileModal";
 const REACT_APP_BASEURL = process.env.REACT_APP_BASEURL
 
 class Applicants extends Component {
@@ -37,8 +36,7 @@ class Applicants extends Component {
     }
 
     rowClick = (row) => {
-        this.setState({ showProfile: true });
-        this.setState({ profileData: row });
+        this.props.history.push(`/applicants/applicant`, {...row})
     }
 
     render() {
