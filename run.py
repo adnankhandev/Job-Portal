@@ -92,6 +92,6 @@ api.add_resource(resources.GetEmploymentHistory, '/api/v1/employment-history/<id
 
 
 #Registering database
-DB_URI = "mongodb://admin:" + urllib.parse.quote("abc@123") + "@13.127.206.56/maid"
+DB_URI = "mongodb://admin:" + urllib.parse.quote("abc@123") + "@35.154.100.63/maid"
 app.config['MONGODB_HOST'] = DB_URI
 db = MongoEngine(app)
