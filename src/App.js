@@ -6,7 +6,6 @@ import Services from './components/Services';
 import Applicants from './components/Applicants';
 import Jobs from './components/Jobs';
 import GeneralQuestions from './components/GeneralQuestions';
-import Tests from './components/Test';
 
 import { ApplicantsProfile } from "./components/common/ApplicantsProfile";
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
@@ -26,7 +25,6 @@ class App extends Component {
             <PrivateRoute path="/applicants/applicant" component={ApplicantsProfile} />
             <PrivateRoute exact path={`/jobs`} component={Jobs} />
             <PrivateRoute exact path={`/general-questions`} component={GeneralQuestions} />
-            <PrivateRoute exact path={`/tests`} component={Tests} />
           </Switch>
       </BrowserRouter>
     );
